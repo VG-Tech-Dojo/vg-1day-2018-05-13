@@ -1,19 +1,17 @@
 (function() {
   'use strict';
   const Message = function() {
-    this.body = ''
-    this.username = ''
+    this.body = '';
   };
 
   Vue.component('message', {
     // 1-1. ユーザー名を表示しよう
-    props: ['id', 'body', 'username', 'removeMessage', 'updateMessage'],
+    props: ['id', 'body', 'removeMessage', 'updateMessage'],
     data() {
       return {
         editing: false,
         editedBody: null,
         displayedBody: this.body,
-        displayedUserName: this.username || '',
       }
     },
     // 1-1. ユーザー名を表示しよう
@@ -27,7 +25,7 @@
         </div>
       </div>
       <div class="message-body" v-else>
-        <span>{{ displayedBody }} - {{ displayedUserName }}</span>
+        <span>{{ displayedBody }}</span>
         <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
         <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
       </div>
@@ -36,6 +34,9 @@
     methods: {
       remove() {
         this.removeMessage(this.id)
+          .then(() => {
+            console.log('Deleting message')
+          })
       },
       edit() {
         this.editing = true
@@ -47,12 +48,8 @@
       },
       doneEdit() {
         this.updateMessage({id: this.id, body: this.editedBody})
-          .then(response => {
-            if (response.error) {
-              alert(response.error.message);
-              return;
-            }
-            this.displayedBody = this.editedBody
+          .then(data => {
+            console.log('Updating message')
             this.cancelEdit()
           })
       }
@@ -80,7 +77,7 @@
           method: 'POST',
           body: JSON.stringify(message)
         })
-          .then(response => response.json)
+          .then(response => response.json())
           .then(response => {
             if (response.error) {
               alert(response.error.message);
@@ -98,15 +95,6 @@
           method: 'DELETE'
         })
         .then(response => response.json())
-        .then(response => {
-          if (response.error) {
-            alert(response.error.message);
-            return;
-          }
-          this.messages = this.messages.filter(m => {
-            return m.id !== id
-          })
-        })
       },
       updateMessage(message) {
         return fetch(`/api/messages/${message.id}`, {
@@ -118,6 +106,8 @@
       clearMessage() {
         this.newMessage = new Message();
       }
+	  // 1-3. メッセージを編集しよう
+      // ...
     }
   });
 })();
