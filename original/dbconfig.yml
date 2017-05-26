@@ -4,8 +4,3 @@ development:
   dialect: sqlite3
   datasource: dev.db?loc=auto
   dir: ./migrations
-
-test:
-  dialect: sqlite3
-  datasource: test.db?loc=auto
-  dir: ./migrations
