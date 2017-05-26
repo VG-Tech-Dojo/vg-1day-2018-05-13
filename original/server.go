@@ -17,11 +17,11 @@ import (
 
 // Server はAPIサーバーが実装された構造体です
 type Server struct {
-	db          *sql.DB
-	Engine      *gin.Engine
-	broadcaster *bot.Broadcaster
-	poster      *bot.Poster
-	bots        []*bot.Bot
+	db        *sql.DB
+	Engine    *gin.Engine
+	deliverer *bot.Deliverer
+	poster    *bot.Poster
+	bots      []*bot.Bot
 }
 
 // NewServer は新しいServerの構造体のポインタを返します
@@ -70,8 +70,8 @@ func (s *Server) Init(dbconf, env string) error {
 	api.DELETE("/messages/:id", mctr.DeleteByID)
 
 	// bot
-	broadcaster := bot.NewBroadcaster(msgStream)
-	s.broadcaster = broadcaster
+	dlv := bot.NewDeliverer(msgStream)
+	s.deliverer = dlv
 
 	poster := bot.NewPoster(10)
 	s.poster = poster
@@ -97,13 +97,12 @@ func (s *Server) Run() {
 	defer cancel()
 
 	// botを起動
-	go s.broadcaster.Run()
-
+	go s.deliverer.Run()
 	go s.poster.Run()
 
 	for _, b := range s.bots {
 		go b.Run(ctx)
-		s.broadcaster.BotIn <- b
+		s.deliverer.BotIn <- b
 	}
 
 	s.Engine.Run()

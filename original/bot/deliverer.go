@@ -5,7 +5,7 @@ import (
 )
 
 type (
-	// Broadcaster は1つのチャンネルで複数botを動かすためのヘルパーです
+	// Deliverer は1つのチャンネルで複数botを動かすためのヘルパーです
 	//
 	// msgInで受け取ったmessageをbotsに登録された全botに渡します
 	//
@@ -15,15 +15,15 @@ type (
 	// 	   BotIn chan *Bot
 	// 	   bots  map[*Bot]bool
 	// 	   msgIn chan *model.Message
-	Broadcaster struct {
+	Deliverer struct {
 		BotIn chan *Bot
 		bots  []*Bot
 		msgIn chan *model.Message
 	}
 )
 
-// Run はBroadcasterを起動します
-func (b *Broadcaster) Run() {
+// Run はDelivererを起動します
+func (b *Deliverer) Run() {
 	for {
 		select {
 		case bot := <-b.BotIn:
@@ -36,10 +36,10 @@ func (b *Broadcaster) Run() {
 	}
 }
 
-// NewBroadcaster は新しいBroadcaster構造体のポインタを返します
-func NewBroadcaster(msgIn chan *model.Message) *Broadcaster {
+// NewDeliverer は新しいDeliverer構造体のポインタを返します
+func NewDeliverer(msgIn chan *model.Message) *Deliverer {
 	memberIn := make(chan *Bot)
-	return &Broadcaster{
+	return &Deliverer{
 		BotIn: memberIn,
 		bots:  []*Bot{},
 		msgIn: msgIn,
