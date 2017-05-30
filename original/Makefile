@@ -3,7 +3,7 @@
 GOOS = darwin
 GOARCH = amd64
 VERSION = $(shell git rev-parse HEAD)
-ENV = test
+ENV = development
 host=localhost:8080
 
 server:
