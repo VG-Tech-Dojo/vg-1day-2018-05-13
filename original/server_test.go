@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -40,11 +41,42 @@ func defaultTestServer() *httptest.Server {
 func TestTopページが200を返す(t *testing.T) {
 	resp, err := http.Get(ts.URL + "/")
 	if err != nil {
-		t.Fatalf("get index page failed: %s", err)
+		t.Fatalf("failed to get response: %s", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		t.Fatalf("fail to get index page: status code is %d", resp.StatusCode)
+	if expected := 200; resp.StatusCode != expected {
+		t.Fatalf("status code expected %d but not, actual %d", expected, resp.StatusCode)
 	}
 }
+
+func TestAPIがpingに応答する(t *testing.T) {
+	resp, err := http.Get(ts.URL + "/api/ping")
+	if err != nil {
+		t.Fatalf("failed to get response: %s", err)
+	}
+	defer resp.Body.Close()
+
+	if expected := 200; resp.StatusCode != expected {
+		t.Fatalf("status code expected %d but not, actual %d", expected, resp.StatusCode)
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("failed to read http response, %s", err)
+	}
+
+	if expected := "pong"; string(b) != expected {
+		t.Fatalf("response body expected %s but not, actual %s", expected, string(b))
+	}
+}
+
+func TestAPIがメッセージを全て返す(t *testing.T) {}
+
+func TestAPIが指定したIDのメッセージを返す(t *testing.T) {}
+
+func TestAPIが新しいメッセージを作成する(t *testing.T) {}
+
+func TestAPIが指定したIDのメッセージを更新する(t *testing.T) {}
+
+func TestAPIが指定したIDのメッセージを削除するする(t *testing.T) {}
