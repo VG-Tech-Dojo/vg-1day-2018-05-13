@@ -46,13 +46,13 @@ clean: clean_vendor
 
 ## Test
 test: test_init test.db
-	go test -v
+	GIN_MODE=test go test -v
 
 test_init:
-	rm test.db
+	@rm test.db
 
 test.db:
-	cp -i _etc/seed.db $@
+	@cp -i _etc/seed.db $@
 
 ## Clean vendor directory
 clean_vendor:
