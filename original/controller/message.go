@@ -60,11 +60,14 @@ func (m *Message) GetByID(c *gin.Context) {
 // Create は新しいメッセージ保存し、作成したメッセージをJSONで返します
 func (m *Message) Create(c *gin.Context) {
 	var msg model.Message
+	// bodyがないとここでerrになってる
+	// => body is missingが返ってない
 	if err := c.BindJSON(&msg); err != nil {
 		resp := httputil.NewErrorResponse(err)
 		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
+
 	if msg.Body == "" {
 		resp := httputil.NewErrorResponse(errors.New("body is missing"))
 		c.JSON(http.StatusBadRequest, resp)
