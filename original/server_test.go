@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -71,9 +72,61 @@ func TestAPIがpingに応答する(t *testing.T) {
 	}
 }
 
-func TestAPIがメッセージを全て返す(t *testing.T) {}
+func TestAPIがメッセージを全て返す(t *testing.T) {
+	resp, err := http.Get(ts.URL + "/api/messages")
+	if err != nil {
+		t.Fatalf("failed to get response: %s", err)
+	}
+	defer resp.Body.Close()
 
-func TestAPIが指定したIDのメッセージを返す(t *testing.T) {}
+	if expected := 200; resp.StatusCode != expected {
+		t.Fatalf("status code expected %d but not, actual %d", expected, resp.StatusCode)
+	}
+
+	if expected := "application/json; charset=utf-8"; resp.Header.Get("Content-Type") != expected {
+		t.Fatalf("response header expected %s but not, actual: %s", expected, resp.Header.Get("Content-Type"))
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("failed to read http response, %s", err)
+	}
+
+	expected := `{"error":null,"result":[{"id":1,"body":"hoge"},{"id":2,"body":"fuga"},{"id":3,"body":"piyo"}]}`
+	// http responseの末尾に改行が含まれるので除去して比較します
+	actual := strings.TrimRight(string(b), "\n")
+	if actual != expected {
+		t.Fatalf("response body expected %s, but %s", expected, string(b))
+	}
+}
+
+func TestAPIが指定したIDのメッセージを返す(t *testing.T) {
+	resp, err := http.Get(ts.URL + "/api/messages/1")
+	if err != nil {
+		t.Fatalf("failed to get response: %s", err)
+	}
+	defer resp.Body.Close()
+
+	if expected := 200; resp.StatusCode != expected {
+		t.Fatalf("status code expected %d but not, actual %d", expected, resp.StatusCode)
+	}
+
+	if expected := "application/json; charset=utf-8"; resp.Header.Get("Content-Type") != expected {
+		t.Fatalf("response header expected %s but not, actual: %s", expected, resp.Header.Get("Content-Type"))
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("failed to read http response, %s", err)
+	}
+
+	expected := `{"error":null,"result":{"id":1,"body":"hoge"}}`
+	// http responseの末尾に改行が含まれるので除去して比較します
+	actual := strings.TrimRight(string(b), "\n")
+	if actual != expected {
+		t.Fatalf("response body expected %s, but %s", expected, string(b))
+	}
+}
 
 func TestAPIが新しいメッセージを作成する(t *testing.T) {}
 
