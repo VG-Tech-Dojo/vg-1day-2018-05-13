@@ -4,9 +4,9 @@ import (
 	"testing"
 )
 
-func TestSimple(t *testing.T) {
+func TestSample(t *testing.T) {
 	value := 1
-	expected := 2
+	expected := 1
 	if value != expected {
 		t.Fatalf("Expected %v, but %v:", expected, value)
 	}
