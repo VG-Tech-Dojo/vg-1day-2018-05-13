@@ -180,4 +180,4 @@ func TestHelloWorldBotが反応する(t *testing.T) {
 
 func TestAPIが指定したIDのメッセージを更新する(t *testing.T) {}
 
-func TestAPIが指定したIDのメッセージを削除するする(t *testing.T) {}
+func TestAPIが指定したIDのメッセージを削除する(t *testing.T) {}
