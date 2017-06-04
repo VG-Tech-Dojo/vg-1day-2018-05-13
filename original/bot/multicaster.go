@@ -5,7 +5,7 @@ import (
 )
 
 type (
-	// Deliverer は1つのチャンネルで複数botを動かすためのヘルパーです
+	// Multicaster は1つのチャンネルで複数botを動かすためのヘルパーです
 	//
 	// msgInで受け取ったmessageをbotsに登録された全botに渡します
 	//
@@ -15,15 +15,15 @@ type (
 	// 	   BotIn chan *Bot
 	// 	   bots  map[*Bot]bool
 	// 	   msgIn chan *model.Message
-	Deliverer struct {
+	Multicaster struct {
 		BotIn chan *Bot
 		bots  []*Bot
 		msgIn chan *model.Message
 	}
 )
 
-// Run はDelivererを起動します
-func (b *Deliverer) Run() {
+// Run はMulticasterを起動します
+func (b *Multicaster) Run() {
 	for {
 		select {
 		case bot := <-b.BotIn:
@@ -36,10 +36,10 @@ func (b *Deliverer) Run() {
 	}
 }
 
-// NewDeliverer は新しいDeliverer構造体のポインタを返します
-func NewDeliverer(msgIn chan *model.Message) *Deliverer {
+// NewMulticaster は新しいMulticaster構造体のポインタを返します
+func NewMulticaster(msgIn chan *model.Message) *Multicaster {
 	memberIn := make(chan *Bot)
-	return &Deliverer{
+	return &Multicaster{
 		BotIn: memberIn,
 		bots:  []*Bot{},
 		msgIn: msgIn,
