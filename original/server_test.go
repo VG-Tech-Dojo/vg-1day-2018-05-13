@@ -169,6 +169,37 @@ func TestAPIが新しいメッセージを作成する(t *testing.T) {
 	}
 }
 
+// poster.goでURL固定でpostしてるのでテストサーバーにpostされなくてテストしづらい
+// とりあえずコードだけ書いてコメントアウトしておく
+
+// func TestHelloWorldBotが反応する(t *testing.T) {
+// 	// botが反応するキーワードを投稿する
+// 	r, err := http.Post(ts.URL+"/api/messages", "application/json", bytes.NewBuffer([]byte(`{"body": "hello"}`)))
+// 	if err != nil {
+// 		t.Fatalf("failed to post request: %s", err)
+// 	}
+// 	defer r.Body.Close()
+//
+// 	// 最新メッセージを取得する
+// 	resp, err := http.Get(ts.URL + "/api/messages/6")
+// 	if err != nil {
+// 		t.Fatalf("failed to get response: %s", err)
+// 	}
+// 	defer resp.Body.Close()
+//
+// 	b, err := ioutil.ReadAll(resp.Body)
+// 	if err != nil {
+// 		t.Fatalf("failed to read http response, %s", err)
+// 	}
+//
+// 	expected := `{"error":null,"result":{"id":6,"body":"hello, world!"}}`
+// 	// http responseの末尾に改行が含まれるので除去して比較します
+// 	actual := strings.TrimRight(string(b), "\n")
+// 	if actual != expected {
+// 		t.Fatalf("response body expected %s, but %s", expected, string(b))
+// 	}
+// }
+
 func TestAPIが指定したIDのメッセージを更新する(t *testing.T) {}
 
 func TestAPIが指定したIDのメッセージを削除するする(t *testing.T) {}
