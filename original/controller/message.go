@@ -60,7 +60,7 @@ func (m *Message) GetByID(c *gin.Context) {
 // Create は新しいメッセージ保存し、作成したメッセージをJSONで返します
 func (m *Message) Create(c *gin.Context) {
 	var msg model.Message
-	// bodyがないとここでerrになってる
+	// bodyがない(=空文字ですらなく指定されていない場合)ここでerrになってる
 	// => body is missingが返ってない
 	if err := c.BindJSON(&msg); err != nil {
 		resp := httputil.NewErrorResponse(err)
@@ -85,7 +85,7 @@ func (m *Message) Create(c *gin.Context) {
 	}
 
 	// bot対応
-	m.Stream <- inserted
+	// m.Stream <- inserted
 
 	c.JSON(http.StatusCreated, gin.H{
 		"result": inserted,
