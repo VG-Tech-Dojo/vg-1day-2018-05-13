@@ -85,7 +85,7 @@ func (m *Message) Create(c *gin.Context) {
 	}
 
 	// bot対応
-	// m.Stream <- inserted
+	m.Stream <- inserted
 
 	c.JSON(http.StatusCreated, gin.H{
 		"result": inserted,

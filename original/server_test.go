@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -35,6 +36,16 @@ func defaultTestServer() *httptest.Server {
 	s := NewServer()
 	if err := s.Init(dbconf, env); err != nil {
 		panic(fmt.Sprintf("failed to init server: %v", err))
+	}
+
+	// testからbotも起動するのに必要
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go s.broadcaster.Run()
+	go s.poster.Run()
+	for _, b := range s.bots {
+		go b.Run(ctx)
+		s.broadcaster.BotIn <- b
 	}
 
 	return httptest.NewServer(s.Engine)
