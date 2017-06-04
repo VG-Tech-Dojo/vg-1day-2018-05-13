@@ -2,14 +2,13 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 const (
@@ -17,42 +16,23 @@ const (
 	env    = "test"
 )
 
-// テスト毎に立ち上げるのは時間がかかるのでテスト全体で共有して使いまわします
-var ts *httptest.Server
-
 func TestMain(m *testing.M) {
 	os.Exit(realMain(m))
 }
 
 func realMain(m *testing.M) int {
-	ts = defaultTestServer()
-	defer func() {
-		ts.Close()
-	}()
-	return m.Run()
-}
-
-func defaultTestServer() *httptest.Server {
 	s := NewServer()
 	if err := s.Init(dbconf, env); err != nil {
 		panic(fmt.Sprintf("failed to init server: %v", err))
 	}
+	go s.Run()
+	defer s.Close()
 
-	// testからbotも起動するのに必要
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	go s.broadcaster.Run()
-	go s.poster.Run()
-	for _, b := range s.bots {
-		go b.Run(ctx)
-		s.broadcaster.BotIn <- b
-	}
-
-	return httptest.NewServer(s.Engine)
+	return m.Run()
 }
 
 func TestTopページが200を返す(t *testing.T) {
-	resp, err := http.Get(ts.URL + "/")
+	resp, err := http.Get("http://localhost:8080" + "/")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -64,7 +44,7 @@ func TestTopページが200を返す(t *testing.T) {
 }
 
 func TestAPIがpingに応答する(t *testing.T) {
-	resp, err := http.Get(ts.URL + "/api/ping")
+	resp, err := http.Get("http://localhost:8080" + "/api/ping")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -85,7 +65,7 @@ func TestAPIがpingに応答する(t *testing.T) {
 }
 
 func TestAPIがメッセージを全て返す(t *testing.T) {
-	resp, err := http.Get(ts.URL + "/api/messages")
+	resp, err := http.Get("http://localhost:8080" + "/api/messages")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -113,7 +93,7 @@ func TestAPIがメッセージを全て返す(t *testing.T) {
 }
 
 func TestAPIが指定したIDのメッセージを返す(t *testing.T) {
-	resp, err := http.Get(ts.URL + "/api/messages/1")
+	resp, err := http.Get("http://localhost:8080" + "/api/messages/1")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -142,7 +122,7 @@ func TestAPIが指定したIDのメッセージを返す(t *testing.T) {
 
 func TestAPIが新しいメッセージを作成する(t *testing.T) {
 	tm := "testmessage"
-	resp, err := http.Post(ts.URL+"/api/messages", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`{"body": "%s"}`, tm))))
+	resp, err := http.Post("http://localhost:8080"+"/api/messages", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`{"body": "%s"}`, tm))))
 	if err != nil {
 		t.Fatalf("failed to post request: %s", err)
 	}
@@ -169,36 +149,34 @@ func TestAPIが新しいメッセージを作成する(t *testing.T) {
 	}
 }
 
-// poster.goでURL固定でpostしてるのでテストサーバーにpostされなくてテストしづらい
-// とりあえずコードだけ書いてコメントアウトしておく
+func TestHelloWorldBotが反応する(t *testing.T) {
+	// botが反応するキーワードを投稿する
+	r, err := http.Post("http://localhost:8080"+"/api/messages", "application/json", bytes.NewBuffer([]byte(`{"body": "hello"}`)))
+	if err != nil {
+		t.Fatalf("failed to post request: %s", err)
+	}
+	defer r.Body.Close()
 
-// func TestHelloWorldBotが反応する(t *testing.T) {
-// 	// botが反応するキーワードを投稿する
-// 	r, err := http.Post(ts.URL+"/api/messages", "application/json", bytes.NewBuffer([]byte(`{"body": "hello"}`)))
-// 	if err != nil {
-// 		t.Fatalf("failed to post request: %s", err)
-// 	}
-// 	defer r.Body.Close()
-//
-// 	// 最新メッセージを取得する
-// 	resp, err := http.Get(ts.URL + "/api/messages/6")
-// 	if err != nil {
-// 		t.Fatalf("failed to get response: %s", err)
-// 	}
-// 	defer resp.Body.Close()
-//
-// 	b, err := ioutil.ReadAll(resp.Body)
-// 	if err != nil {
-// 		t.Fatalf("failed to read http response, %s", err)
-// 	}
-//
-// 	expected := `{"error":null,"result":{"id":6,"body":"hello, world!"}}`
-// 	// http responseの末尾に改行が含まれるので除去して比較します
-// 	actual := strings.TrimRight(string(b), "\n")
-// 	if actual != expected {
-// 		t.Fatalf("response body expected %s, but %s", expected, string(b))
-// 	}
-// }
+	// 最新メッセージを取得する
+	time.Sleep(1 * time.Second)
+	resp, err := http.Get("http://localhost:8080" + "/api/messages/6")
+	if err != nil {
+		t.Fatalf("failed to get response: %s", err)
+	}
+	defer resp.Body.Close()
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("failed to read http response, %s", err)
+	}
+
+	expected := `{"error":null,"result":{"id":6,"body":"hello, world!"}}`
+	// http responseの末尾に改行が含まれるので除去して比較します
+	actual := strings.TrimRight(string(b), "\n")
+	if actual != expected {
+		t.Fatalf("response body expected %s, but %s", expected, string(b))
+	}
+}
 
 func TestAPIが指定したIDのメッセージを更新する(t *testing.T) {}
 
