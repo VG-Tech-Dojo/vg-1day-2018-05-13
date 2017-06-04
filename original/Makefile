@@ -49,7 +49,7 @@ test: test_init test.db
 	GIN_MODE=test go test -v
 
 test_init:
-	@rm test.db
+	@rm -f test.db
 
 test.db:
 	@cp -i _etc/seed.db $@
