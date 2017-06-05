@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	"fmt"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2017/original/env"
 	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
 )
 
 const (
-	keywordApiUrlFormat = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
+	keywordAPIURLFormat = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
 )
 
 type (
@@ -25,7 +26,7 @@ type (
 	// OmikujiProcessor は"大吉", "吉", "中吉", "小吉", "末吉", "凶"のいずれかをランダムで作るprocessorの構造体です
 	OmikujiProcessor struct{}
 
-	// メッセージ本文からキーワードを抽出するprocessorの構造体です
+	// KeywordProcessor はメッセージ本文からキーワードを抽出するprocessorの構造体です
 	KeywordProcessor struct{}
 )
 
@@ -58,7 +59,7 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) *model.Message {
 	matchedStrings := r.FindStringSubmatch(msgIn.Body)
 	text := matchedStrings[1]
 
-	url := fmt.Sprintf(keywordApiUrlFormat, env.KeywordApiAppId, text)
+	url := fmt.Sprintf(keywordAPIURLFormat, env.KeywordAPIAppID, text)
 
 	json := map[string]int{}
 	get(url, &json)
