@@ -60,6 +60,7 @@ func (m *Message) GetByID(c *gin.Context) {
 // Create は新しいメッセージ保存し、作成したメッセージをJSONで返します
 func (m *Message) Create(c *gin.Context) {
 	var msg model.Message
+
 	if err := c.BindJSON(&msg); err != nil {
 		resp := httputil.NewErrorResponse(err)
 		c.JSON(http.StatusInternalServerError, resp)

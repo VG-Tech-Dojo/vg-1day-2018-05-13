@@ -22,7 +22,7 @@ deps:
 	which golint || go get -u github.com/golang/lint/golint
 
 ## Install dependency packages, cache compiled packages
-install: deps env/env.go dev.db 
+install: deps env/env.go dev.db
 	dep ensure
 	go install
 
@@ -43,6 +43,16 @@ lint:
 	golint $$(go list ./... | grep -v vendor)
 
 clean: clean_vendor
+
+## Test
+test: test_init test.db
+	GIN_MODE=test go test -v
+
+test_init:
+	@rm -f test.db
+
+test.db:
+	@cp -i _etc/seed.db $@
 
 ## Clean vendor directory
 clean_vendor:
