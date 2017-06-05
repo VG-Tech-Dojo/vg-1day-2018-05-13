@@ -19,7 +19,7 @@ import (
 type Server struct {
 	db          *sql.DB
 	Engine      *gin.Engine
-	broadcaster *bot.Broadcaster
+	multicaster *bot.Multicaster
 	poster      *bot.Poster
 	bots        []*bot.Bot
 }
@@ -70,8 +70,8 @@ func (s *Server) Init(dbconf, env string) error {
 	api.DELETE("/messages/:id", mctr.DeleteByID)
 
 	// bot
-	broadcaster := bot.NewBroadcaster(msgStream)
-	s.broadcaster = broadcaster
+	mc := bot.NewMulticaster(msgStream)
+	s.multicaster = mc
 
 	poster := bot.NewPoster(10)
 	s.poster = poster
@@ -97,13 +97,12 @@ func (s *Server) Run() {
 	defer cancel()
 
 	// botを起動
-	go s.broadcaster.Run()
-
+	go s.multicaster.Run()
 	go s.poster.Run()
 
 	for _, b := range s.bots {
 		go b.Run(ctx)
-		s.broadcaster.BotIn <- b
+		s.multicaster.BotIn <- b
 	}
 
 	s.Engine.Run()
