@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
 )
@@ -27,17 +26,12 @@ type (
 
 // Run はBotを起動します
 func (b *Bot) Run(ctx context.Context) {
-	fmt.Printf("%s start\n", b.name)
-
 	// メッセージ監視
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Printf("%s stop", b.name)
 			return
 		case m := <-b.in:
-			fmt.Printf("%s received: %v\n", b.name, m)
-
 			if b.checker.Check(m) {
 				b.out <- b.processor.Process(m)
 			}
