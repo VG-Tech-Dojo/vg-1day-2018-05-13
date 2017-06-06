@@ -14,7 +14,10 @@ import (
 const (
 	dbconf = "dbconfig.yml"
 	env    = "test"
+	port   = "50000"
 )
+
+var tsURL = "http://localhost:" + port
 
 func TestMain(m *testing.M) {
 	os.Exit(realMain(m))
@@ -25,14 +28,14 @@ func realMain(m *testing.M) int {
 	if err := s.Init(dbconf, env); err != nil {
 		panic(fmt.Sprintf("failed to init server: %v", err))
 	}
-	go s.Run()
+	go s.Run(port)
 	defer s.Close()
 
 	return m.Run()
 }
 
 func TestTopページが200を返す(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080" + "/")
+	resp, err := http.Get(tsURL + "/")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -44,7 +47,7 @@ func TestTopページが200を返す(t *testing.T) {
 }
 
 func TestAPIがpingに応答する(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080" + "/api/ping")
+	resp, err := http.Get(tsURL + "/api/ping")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -65,7 +68,7 @@ func TestAPIがpingに応答する(t *testing.T) {
 }
 
 func TestAPIがメッセージを全て返す(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080" + "/api/messages")
+	resp, err := http.Get(tsURL + "/api/messages")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -93,7 +96,7 @@ func TestAPIがメッセージを全て返す(t *testing.T) {
 }
 
 func TestAPIが指定したIDのメッセージを返す(t *testing.T) {
-	resp, err := http.Get("http://localhost:8080" + "/api/messages/1")
+	resp, err := http.Get(tsURL + "/api/messages/1")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}
@@ -122,7 +125,7 @@ func TestAPIが指定したIDのメッセージを返す(t *testing.T) {
 
 func TestAPIが新しいメッセージを作成する(t *testing.T) {
 	tm := "testmessage"
-	resp, err := http.Post("http://localhost:8080"+"/api/messages", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`{"body": "%s"}`, tm))))
+	resp, err := http.Post(tsURL+"/api/messages", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`{"body": "%s"}`, tm))))
 	if err != nil {
 		t.Fatalf("failed to post request: %s", err)
 	}
@@ -151,7 +154,7 @@ func TestAPIが新しいメッセージを作成する(t *testing.T) {
 
 func TestHelloWorldBotが反応する(t *testing.T) {
 	// botが反応するキーワードを投稿する
-	r, err := http.Post("http://localhost:8080"+"/api/messages", "application/json", bytes.NewBuffer([]byte(`{"body": "hello"}`)))
+	r, err := http.Post(tsURL+"/api/messages", "application/json", bytes.NewBuffer([]byte(`{"body": "hello"}`)))
 	if err != nil {
 		t.Fatalf("failed to post request: %s", err)
 	}
@@ -159,7 +162,7 @@ func TestHelloWorldBotが反応する(t *testing.T) {
 
 	// 最新メッセージを取得する
 	time.Sleep(1 * time.Second)
-	resp, err := http.Get("http://localhost:8080" + "/api/messages/6")
+	resp, err := http.Get(tsURL + "/api/messages/6")
 	if err != nil {
 		t.Fatalf("failed to get response: %s", err)
 	}

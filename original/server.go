@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -92,26 +93,27 @@ func (s *Server) Close() error {
 }
 
 // Run はサーバーを起動します
-func (s *Server) Run() {
+func (s *Server) Run(port string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	// botを起動
 	go s.multicaster.Run()
-	go s.poster.Run()
+	go s.poster.Run(fmt.Sprintf("http://0.0.0.0:%s", port))
 
 	for _, b := range s.bots {
 		go b.Run(ctx)
 		s.multicaster.BotIn <- b
 	}
 
-	s.Engine.Run()
+	s.Engine.Run(fmt.Sprintf(":%s", port))
 }
 
 func main() {
 	var (
 		dbconf = flag.String("dbconf", "dbconfig.yml", "database configuration file.")
 		env    = flag.String("env", "development", "application envirionment (production, development etc.)")
+		port   = flag.String("port", "8080", "listening port.")
 	)
 	flag.Parse()
 
@@ -121,5 +123,5 @@ func main() {
 	}
 	defer s.Close()
 
-	s.Run()
+	s.Run(*port)
 }
