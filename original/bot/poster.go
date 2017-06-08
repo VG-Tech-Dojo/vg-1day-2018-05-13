@@ -4,10 +4,6 @@ import (
 	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
 )
 
-const (
-	postURL = "http://localhost:8080/api/messages"
-)
-
 type (
 	// Poster はInに渡されたmessageをPOSTするための構造体です
 	Poster struct {
@@ -16,10 +12,10 @@ type (
 )
 
 // Run はPosterを起動します
-func (p *Poster) Run() {
+func (p *Poster) Run(url string) {
 	for m := range p.In {
 		out := &model.Message{}
-		go postJSON(postURL, m, out)
+		go postJSON(url+"/api/messages", m, out)
 	}
 }
 
