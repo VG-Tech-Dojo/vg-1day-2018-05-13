@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"context"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
 )
 
@@ -12,10 +14,15 @@ type (
 )
 
 // Run はPosterを起動します
-func (p *Poster) Run(url string) {
-	for m := range p.In {
-		out := &model.Message{}
-		go postJSON(url+"/api/messages", m, out)
+func (p *Poster) Run(ctx context.Context, url string) {
+	for {
+		select {
+		case <-ctx.Done():
+			close(p.In)
+			return
+		case m := <-p.In:
+			postJSON(url+"/api/messages", m, nil)
+		}
 	}
 }
 
