@@ -30,6 +30,7 @@ func (b *Bot) Run(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
+			close(b.in)
 			return
 		case m := <-b.in:
 			if b.checker.Check(m) {
