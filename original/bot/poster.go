@@ -15,7 +15,7 @@ type (
 func (p *Poster) Run(url string) {
 	for m := range p.In {
 		out := &model.Message{}
-		go postJSON(url+"/api/messages", m, out)
+		postJSON(url+"/api/messages", m, out)
 	}
 }
 
