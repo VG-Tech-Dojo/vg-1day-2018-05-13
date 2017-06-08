@@ -61,14 +61,15 @@ func (m *Message) GetByID(c *gin.Context) {
 func (m *Message) Create(c *gin.Context) {
 	var msg model.Message
 
+	if c.Request.ContentLength == 0 {
+		resp := httputil.NewErrorResponse(errors.New("body is missing"))
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
 	if err := c.BindJSON(&msg); err != nil {
 		resp := httputil.NewErrorResponse(err)
 		c.JSON(http.StatusInternalServerError, resp)
-		return
-	}
-	if msg.Body == "" {
-		resp := httputil.NewErrorResponse(errors.New("body is missing"))
-		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
