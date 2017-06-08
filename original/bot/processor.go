@@ -61,12 +61,16 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 
 	url := fmt.Sprintf(keywordAPIURLFormat, env.KeywordAPIAppID, text)
 
-	json := map[string]int{}
+	type keywordAPIResponse map[string]interface{}
+	var json keywordAPIResponse
 	get(url, &json)
 
 	keywords := []string{}
-	for keyword := range map[string]int(json) {
-		keywords = append(keywords, keyword)
+	for k, v := range json {
+		if k == "Error" {
+			return nil, fmt.Errorf("%#v", v)
+		}
+		keywords = append(keywords, k)
 	}
 
 	return &model.Message{
