@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"log"
 
 	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
 )
@@ -34,7 +35,16 @@ func (b *Bot) Run(ctx context.Context) {
 			return
 		case m := <-b.in:
 			if b.checker.Check(m) {
-				b.out <- b.processor.Process(m)
+				nm, err := b.processor.Process(m)
+				if err != nil {
+					log.Printf("%s: %#v\n", b.name, err)
+					b.out <- &model.Message{
+						Body: "気が乗らないパカ",
+					}
+					// selectから抜ける
+					break
+				}
+				b.out <- nm
 			}
 		}
 	}
