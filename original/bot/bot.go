@@ -38,6 +38,9 @@ func (b *Bot) Run(ctx context.Context) {
 				nm, err := b.processor.Process(m)
 				if err != nil {
 					log.Printf("%s: %#v\n", b.name, err)
+					b.out <- &model.Message{
+						Body: "気が乗らないパカ",
+					}
 					// selectから抜ける
 					break
 				}
