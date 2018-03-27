@@ -1,9 +1,9 @@
-vg-1day-2017
+vg-1day-2018
 ---
 
 ## 概要
 
-vg-1day-2017 で使う予定のサンプルアプリです。
+vg-1day-2018 で使う予定のサンプルアプリです。
 
 サーバーサイドはgolang、クライアントサイドはHTML, Vue.jsで実装されています。
 
@@ -17,7 +17,7 @@ vg-1day-2017 で使う予定のサンプルアプリです。
 
 ```
 $ pwd
-/Users/s-sasamoto/src/github.com/VG-Tech-Dojo/vg-1day-2017
+/Users/s-sasamoto/src/github.com/VG-Tech-Dojo/vg-1day-2018
 $ make docker_server
 
 # foregroundで実行したい場合
