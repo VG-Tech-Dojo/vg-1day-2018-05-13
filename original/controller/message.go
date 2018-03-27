@@ -5,8 +5,8 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/VG-Tech-Dojo/vg-1day-2017/original/httputil"
-	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
+	"github.com/VG-Tech-Dojo/vg-1day-2018/original/httputil"
+	"github.com/VG-Tech-Dojo/vg-1day-2018/original/model"
 	"github.com/gin-gonic/gin"
 )
 

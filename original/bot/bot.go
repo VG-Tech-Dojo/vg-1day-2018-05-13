@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/VG-Tech-Dojo/vg-1day-2017/original/model"
+	"github.com/VG-Tech-Dojo/vg-1day-2018/original/model"
 )
 
 type (
