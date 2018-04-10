@@ -9,22 +9,22 @@ HOST    := localhost:8080
 help:
 	@cat Makefile
 
-deps:
+deps: env/env.go dev.db
 	which dep || go get -u github.com/golang/dep/...
 	which sql-migrate || go get -u github.com/rubenv/sql-migrate/...
 	dep ensure
 
-run: fmt vet env/env.go dev.db
+run: fmt vet
 	go run server.go
 
-build:
+build: fmt vet
 	go build -ldflags "-X=main.version=$(VERSION)" server.go
 
 fmt:
-	go fmt $$(go list ./... | grep -v vendor)
+	go fmt $$(go list ./...)
 
 vet:
-	go vet $$(go list ./... | grep -v vendor)
+	go vet $$(go list ./...)
 
 clean:
 	rm -rf vendor
@@ -41,8 +41,7 @@ env/env.go:
 dev.db:
 	cp -i _etc/seed.db dev.db
 
-.PHONY: migrate_up migrate_dryrun migrate_status
-
+.PHONY: migrate_*
 ## Migrate db schema
 migrate_up:
 	sql-migrate up -env=$(ENV)
@@ -55,8 +54,7 @@ migrate_dryrun:
 migrate_status:
 	sql-migrate status -env=$(ENV)
 
-.PHONY: curl_messages_ping curl_messages_get curl_messages_get_all curl_message_post curl_message_put curl_message_delete
-
+.PHONY: curl_*
 curl_messages_ping:
 	curl -i $(HOST)/api/ping
 
@@ -72,8 +70,7 @@ curl_message_post:
 	curl -i -X POST $(HOST)/api/messages -d '{"BODY": "$(BODY)"}'
 
 curl_message_put:
-	curl -i -X PUT $(HOST)/api/messages/$(id) -d '{"BODY": "$(BODY)"}'
+	curl -i -X PUT $(HOST)/api/messages/$(ID) -d '{"BODY": "$(BODY)"}'
 
 curl_message_delete:
-	curl -i -X DELETE $(HOST)/api/messages/$(id)
-
+	curl -i -X DELETE $(HOST)/api/messages/$(ID)
