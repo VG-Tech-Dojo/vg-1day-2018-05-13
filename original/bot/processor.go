@@ -8,6 +8,7 @@ import (
 
 	"github.com/VG-Tech-Dojo/vg-1day-2018/original/env"
 	"github.com/VG-Tech-Dojo/vg-1day-2018/original/model"
+	"net/url"
 )
 
 const (
@@ -59,7 +60,7 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 	matchedStrings := r.FindStringSubmatch(msgIn.Body)
 	text := matchedStrings[1]
 
-	url := fmt.Sprintf(keywordAPIURLFormat, env.KeywordAPIAppID, text)
+	url := fmt.Sprintf(keywordAPIURLFormat, env.KeywordAPIAppID, url.QueryEscape(text))
 
 	type keywordAPIResponse map[string]interface{}
 	var json keywordAPIResponse
