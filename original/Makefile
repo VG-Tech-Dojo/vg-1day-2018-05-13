@@ -6,32 +6,19 @@ VERSION = $(shell git rev-parse HEAD)
 ENV = development
 host=localhost:8080
 
-server:
-	go run server.go
+help:
+	@cat Makefile
 
-## Live reload
-watch:
-	fresh
-
-## Install dependency tools
 deps:
-	which make2help || go get -u github.com/Songmu/make2help/cmd/make2help
 	which dep || go get -u github.com/golang/dep/...
 	which sql-migrate || go get -u github.com/rubenv/sql-migrate/...
-	which fresh || go get -u github.com/pilu/fresh
-	which golint || go get -u github.com/golang/lint/golint
-
-## Install dependency packages, cache compiled packages
-install: deps env/env.go dev.db
 	dep ensure
-	go install
 
-## Build app
+run: fmt vet env/env.go dev.db
+	go run server.go
+
 build:
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags "-X=main.version=$(VERSION)" server.go
-
-## Check code format
-check: fmt vet lint
 
 fmt:
 	go fmt $$(go list ./... | grep -v vendor)
@@ -39,12 +26,10 @@ fmt:
 vet:
 	go vet $$(go list ./... | grep -v vendor)
 
-lint:
-	golint $$(go list ./... | grep -v vendor)
+clean:
+	rm -rf vendor
+	rm dev.db
 
-clean: clean_vendor
-
-## Test
 test: test_init test.db
 	GIN_MODE=test go test -v
 
@@ -53,14 +38,6 @@ test_init:
 
 test.db:
 	@cp -i _etc/seed.db $@
-
-## Clean vendor directory
-clean_vendor:
-	rm -rf vendor/
-
-## Show help
-help:
-	@make2help -all
 
 ## Migrate db schema
 migrate_up:
@@ -83,7 +60,7 @@ curl_messages_get_all:
 curl_messages_get:
 	curl -i $(host)/api/messages/$(id)
 
-curl_message_create:
+curl_message_post:
 	curl -i -X POST $(host)/api/messages -d '{"body": "$(body)"}'
 
 curl_message_put:
