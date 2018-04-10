@@ -55,7 +55,7 @@ migrate_status:
 	sql-migrate status -env=$(ENV)
 
 .PHONY: curl_*
-curl_messages_ping:
+curl_ping:
 	curl -i $(HOST)/api/ping
 
 curl_messages_get_all:
