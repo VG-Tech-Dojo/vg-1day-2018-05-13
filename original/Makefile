@@ -1,67 +1,47 @@
 .DEFAULT_GOAL := help
 
-GOOS = darwin
-GOARCH = amd64
-VERSION = $(shell git rev-parse HEAD)
-ENV = development
-host=localhost:8080
+VERSION := $(shell git rev-parse HEAD)
+ENV     := development
+HOST    := localhost:8080
 
-server:
-	go run server.go
+.PHONY: help deps run build fmt vet clean test
 
-## Live reload
-watch:
-	fresh
+help:
+	@cat Makefile
 
-## Install dependency tools
-deps:
-	which make2help || go get -u github.com/Songmu/make2help/cmd/make2help
+deps: env/env.go dev.db
 	which dep || go get -u github.com/golang/dep/...
 	which sql-migrate || go get -u github.com/rubenv/sql-migrate/...
-	which fresh || go get -u github.com/pilu/fresh
-	which golint || go get -u github.com/golang/lint/golint
-
-## Install dependency packages, cache compiled packages
-install: deps env/env.go dev.db
 	dep ensure
-	go install
 
-## Build app
-build:
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags "-X=main.version=$(VERSION)" server.go
+run: fmt vet
+	go run server.go
 
-## Check code format
-check: fmt vet lint
+build: fmt vet
+	go build -ldflags "-X=main.version=$(VERSION)" server.go
 
 fmt:
-	go fmt $$(go list ./... | grep -v vendor)
+	go fmt $$(go list ./...)
 
 vet:
-	go vet $$(go list ./... | grep -v vendor)
+	go vet $$(go list ./...)
 
-lint:
-	golint $$(go list ./... | grep -v vendor)
+clean:
+	rm -rf vendor
+	rm dev.db
 
-clean: clean_vendor
-
-## Test
-test: test_init test.db
+test:
+	@rm -f test.db
+	@cp -i _etc/seed.db test.db
 	GIN_MODE=test go test -v
 
-test_init:
-	@rm -f test.db
+env/env.go:
+	cp env/env.go.tmpl env/env.go
 
-test.db:
-	@cp -i _etc/seed.db $@
+dev.db:
+	cp -i _etc/seed.db dev.db
 
-## Clean vendor directory
-clean_vendor:
-	rm -rf vendor/
-
-## Show help
-help:
-	@make2help -all
-
+.PHONY: migrate_*
 ## Migrate db schema
 migrate_up:
 	sql-migrate up -env=$(ENV)
@@ -74,35 +54,23 @@ migrate_dryrun:
 migrate_status:
 	sql-migrate status -env=$(ENV)
 
-curl_messages_ping:
-	curl -i $(host)/api/ping
+.PHONY: curl_*
+curl_ping:
+	curl -i $(HOST)/api/ping
 
 curl_messages_get_all:
-	curl -i $(host)/api/messages
+	curl -i $(HOST)/api/messages
 
+ID :=
 curl_messages_get:
-	curl -i $(host)/api/messages/$(id)
+	curl -i $(HOST)/api/messages/$(ID)
 
-curl_message_create:
-	curl -i -X POST $(host)/api/messages -d '{"body": "$(body)"}'
+BODY :=
+curl_message_post:
+	curl -i -X POST $(HOST)/api/messages -d '{"BODY": "$(BODY)"}'
 
 curl_message_put:
-	curl -i -X PUT $(host)/api/messages/$(id) -d '{"body": "$(body)"}'
+	curl -i -X PUT $(HOST)/api/messages/$(ID) -d '{"BODY": "$(BODY)"}'
 
 curl_message_delete:
-	curl -i -X DELETE $(host)/api/messages/$(id)
-
-dev.db:
-	$(MAKE) db_init
-
-## Initialize database
-db_init:
-	cp -i _etc/seed.db dev.db
-
-## Initialize environment configuration file
-env/env.go:
-	cp env/env.go.tmpl env/env.go
-
-## Build godoc server(http://localhost:6060)
-godoc_server:
-	godoc -http=:6060
+	curl -i -X DELETE $(HOST)/api/messages/$(ID)
