@@ -7,24 +7,30 @@ vg-1day-2018 で使う予定のサンプルアプリです。
 
 サーバーサイドはgolang、クライアントサイドはHTML, Vue.jsで実装されています。
 
-## docker環境
+## Docker 環境
 
-インターンに必須ではありませんが、go1.8.1が入ったdocker環境を用意しました。
-
-- [Docker for Mac](https://docs.docker.com/engine/installation/mac/#/docker-for-mac)
-
-をインストールして `docker` と `docker-compose` コマンドが使えれば動きます。
+インターンに必須ではありませんが、 go 1.10.1 が入ったdocker環境を用意しました。
 
 ```
 $ pwd
 /Users/s-sasamoto/src/github.com/VG-Tech-Dojo/vg-1day-2018
-$ make docker_server
+$ make docker/build
 
-# foregroundで実行したい場合
-$ make docker_server backgroud_option=
+# foregroundで実行したい場合 (xxx は 設定した nickname)
+$ make docker/run/xxx
+```
 
-# なにかおかしいなと感じた時
-$ make docker_clean
+## Vagrant 環境
+
+こちらもインターンに必須ではありませんが、 Vagrantfile も用意しました。
+
+```
+$ pwd
+/Users/s-sasamoto/src/github.com/VG-Tech-Dojo/vg-1day-2018
+$ vagrant up
+$ vagrant ssh
+
+$ cd go/src/github.com/VG-Tech-Dojo/vg-1day-2018
 ```
 
 ## 参考リンク
