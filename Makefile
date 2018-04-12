@@ -22,10 +22,6 @@ setup/gnu: $(nickname) ## for linux
 $(nickname):
 	cp -rf original $(nickname)
 
-docker_server: docker_build docker_up
-
-docker_clean: docker_stop docker_rm 
-
 help:
 	@echo docker_build:	Build the docker container
 	@echo docker_up:	Start the docker container
@@ -33,17 +29,11 @@ help:
 	@echo docker_rm:	Remove the docker container
 	@echo docker_ssh:	Execute an interactive bash shell on the container
 
-docker_build:
-	docker-compose build
+docker/build:
+	docker build -t $(repository_name) .
 
-docker_up:
-	docker-compose up $(background_option)
+docker/run:
+	docker run --rm --name $(repository_name) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(repository_name)
 
-docker_stop:
-	docker-compose stop
-
-docker_rm:
-	docker-compose rm
-
-docker_ssh:
-	docker exec -it vg-1day-2018-go /bin/bash
+docker/run/%: $(@F)
+	docker run --rm --name $(repository_name) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(repository_name) -C $(@F) run
