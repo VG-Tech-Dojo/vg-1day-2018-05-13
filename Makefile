@@ -4,6 +4,9 @@ background_option=-d
 nickname=
 repository_name=$(shell basename $(PWD))
 
+DOCKER_IMAGE     := $(repository_name)
+DOCKER_CONTAINER := $(repository_name)
+
 setup/mac: $(nickname)
 	$(MAKE) setup/bsd
 
@@ -22,18 +25,17 @@ setup/gnu: $(nickname) ## for linux
 $(nickname):
 	cp -rf original $(nickname)
 
-help:
-	@echo docker_build:	Build the docker container
-	@echo docker_up:	Start the docker container
-	@echo docker_stop:	Stop the docker container
-	@echo docker_rm:	Remove the docker container
-	@echo docker_ssh:	Execute an interactive bash shell on the container
-
 docker/build:
-	docker build -t $(repository_name) .
+	docker build -t $(DOCKER_IMAGE) .
+
+docker/deps:
+	docker run --rm --name $(DOCKER_CONTAINER) -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE) -C original deps
 
 docker/run:
-	docker run --rm --name $(repository_name) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(repository_name)
+	docker run --rm --name $(DOCKER_CONTAINER) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE)
+
+docker/deps/%: $(@F)
+	docker run --rm --name $(DOCKER_CONTAINER) -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE) -C $(@F) deps
 
 docker/run/%: $(@F)
-	docker run --rm --name $(repository_name) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(repository_name) -C $(@F) run
+	docker run --rm --name $(DOCKER_CONTAINER) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE) -C $(@F) run

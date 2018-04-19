@@ -10,11 +10,11 @@ help:
 	@cat Makefile
 
 deps: env/env.go dev.db
-	which dep || go get -u github.com/golang/dep/...
+	which dep || go get -u github.com/golang/dep/cmd/dep
 	which sql-migrate || go get -u github.com/rubenv/sql-migrate/...
 	dep ensure
 
-run: fmt vet
+run:
 	go run server.go
 
 build: fmt vet
@@ -30,7 +30,7 @@ clean:
 	rm -rf vendor
 	rm dev.db
 
-test:
+test: fmt vet
 	@rm -f test.db
 	@cp -i _etc/seed.db test.db
 	GIN_MODE=test go test -v

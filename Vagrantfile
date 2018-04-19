@@ -10,14 +10,12 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/home/vagrant/go/src/github.com/VG-Tech-Dojo/vg-1day-2018"
 
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get update -y
-    apt-get install -y git build-essential apt-transport-https ca-certificates curl software-properties-common
     add-apt-repository ppa:gophers/archive
-    apt-get update
-    apt-get install -y golang-1.10-go
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    apt-get update -y
+    apt-get update
+    apt-get install -y git build-essential apt-transport-https ca-certificates curl software-properties-common
+    apt-get install -y golang-1.10-go
     apt-get install -y docker-ce
     echo "export PATH=$PATH:/usr/lib/go-1.10/bin:/home/vagrant/go/bin" >> /home/vagrant/.bashrc
     echo "export GOPATH=/home/vagrant/go" >> /home/vagrant/.bashrc
