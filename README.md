@@ -16,7 +16,8 @@ $ pwd
 /Users/s-sasamoto/src/github.com/VG-Tech-Dojo/vg-1day-2018
 $ make docker/build
 
-# foregroundで実行したい場合 (xxx は 設定した nickname)
+# xxx は 設定した nickname
+$ make docker/deps/xxx
 $ make docker/run/xxx
 ```
 
