@@ -4,6 +4,11 @@ background_option=-d
 nickname=
 repository_name=$(shell basename $(PWD))
 
+DOCKER_IMAGE     := $(repository_name)
+DOCKER_CONTAINER := $(repository_name)
+
+.PHONY: setup/* docker/*
+
 setup/mac: $(nickname)
 	$(MAKE) setup/bsd
 
@@ -22,28 +27,17 @@ setup/gnu: $(nickname) ## for linux
 $(nickname):
 	cp -rf original $(nickname)
 
-docker_server: docker_build docker_up
+docker/build:
+	docker build -t $(DOCKER_IMAGE) .
 
-docker_clean: docker_stop docker_rm 
+docker/deps:
+	docker run --rm --name $(DOCKER_CONTAINER) -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE) -C original deps
 
-help:
-	@echo docker_build:	Build the docker container
-	@echo docker_up:	Start the docker container
-	@echo docker_stop:	Stop the docker container
-	@echo docker_rm:	Remove the docker container
-	@echo docker_ssh:	Execute an interactive bash shell on the container
+docker/run:
+	docker run --rm --name $(DOCKER_CONTAINER) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE)
 
-docker_build:
-	docker-compose build
+docker/deps/%: $(@F)
+	docker run --rm --name $(DOCKER_CONTAINER) -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE) -C $(@F) deps
 
-docker_up:
-	docker-compose up $(background_option)
-
-docker_stop:
-	docker-compose stop
-
-docker_rm:
-	docker-compose rm
-
-docker_ssh:
-	docker exec -it vg-1day-2018-go /bin/bash
+docker/run/%: $(@F)
+	docker run --rm --name $(DOCKER_CONTAINER) -p 8080:8080 -v $(CURDIR):/go/src/github.com/VG-Tech-Dojo/vg-1day-2018 -it $(DOCKER_IMAGE) -C $(@F) run
