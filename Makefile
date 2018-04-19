@@ -7,6 +7,8 @@ repository_name=$(shell basename $(PWD))
 DOCKER_IMAGE     := $(repository_name)
 DOCKER_CONTAINER := $(repository_name)
 
+.PHONY: setup/* docker/*
+
 setup/mac: $(nickname)
 	$(MAKE) setup/bsd
 
