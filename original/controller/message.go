@@ -4,9 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
-
-	"github.com/VG-Tech-Dojo/vg-1day-2018/original/httputil"
-	"github.com/VG-Tech-Dojo/vg-1day-2018/original/model"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/httputil"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/model"
 	"github.com/gin-gonic/gin"
 )
 
