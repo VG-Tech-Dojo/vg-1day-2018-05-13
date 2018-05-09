@@ -44,7 +44,7 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 	m := &Message{}
 
 	// 1-1. ユーザー名を表示しよう
-	if err := db.QueryRow(`select id, body, username from message where id = ?`, id).Scan(&m.ID, &m.Body); err != nil {
+	if err := db.QueryRow(`select id, body, username from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName); err != nil {
 		return nil, err
 	}
 
