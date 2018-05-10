@@ -72,7 +72,7 @@ func (m *Message) Create(c *gin.Context) {
 		return
 	}
 
-	// 1-2. ユーザー名を追加しよう
+	// Tutorial 1-2. ユーザー名を追加しよう
 	// できる人は、ユーザー名が空だったら`anonymous`等適当なユーザー名で投稿するようにしてみよう
 
 	inserted, err := msg.Insert(m.DB)
@@ -93,14 +93,14 @@ func (m *Message) Create(c *gin.Context) {
 
 // UpdateByID は...
 func (m *Message) UpdateByID(c *gin.Context) {
-	// 1-3. メッセージを編集しよう
+	// Mission 1-1. メッセージを編集しよう
 	// ...
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
 // DeleteByID は...
 func (m *Message) DeleteByID(c *gin.Context) {
-	// 1-4. メッセージを削除しよう
+	// Mission 1-2. メッセージを削除しよう
 	// ...
 	c.JSON(http.StatusOK, gin.H{})
 }
