@@ -85,7 +85,7 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 
 // Mission 2-1
 func (p *GachaProcessor) Process(msgIn *model.Message) (*model.Message, error) {
-	r := []string {
+	r := []string{
 		"SSレア", "Sレア", "レア", "ノーマル",
 	}
 	result := r[randIntn(len(r))]
