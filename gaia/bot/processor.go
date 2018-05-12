@@ -29,6 +29,10 @@ type (
 
 	// KeywordProcessor はメッセージ本文からキーワードを抽出するprocessorの構造体です
 	KeywordProcessor struct{}
+
+	// Mission 2-1
+	// GachaProcessor はGachaBotの判定ロジックを持つための構造体です
+	GachaProcessor struct{}
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
@@ -76,5 +80,18 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 
 	return &model.Message{
 		Body: "キーワード：" + strings.Join(keywords, ", "),
+	}, nil
+}
+
+// Mission 2-1
+func (p *GachaProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	r := []string {
+		"SSレア", "Sレア", "レア", "ノーマル",
+	}
+	result := r[randIntn(len(r))]
+	return &model.Message{
+		Body: result,
+		// Tutorial 1-1 ができている前提
+		UserName: "gachabot",
 	}, nil
 }
