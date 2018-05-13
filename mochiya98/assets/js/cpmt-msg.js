@@ -18,7 +18,7 @@ Vue.component('message', {
 		 </div>
 	  </div>
 	  <div class="message-body" v-else>
-		 <span>{{ type }} {{ body }} - {{ username }}</span>
+		 <span>{{ type }} <span v-bind:class="{isStamp: type}">{{ body }}</span> - {{ username }}</span>
 		 <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
 		 <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
 	  </div>
