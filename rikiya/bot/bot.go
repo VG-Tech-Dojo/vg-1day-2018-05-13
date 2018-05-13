@@ -100,3 +100,19 @@ func NewKeywordBot(out chan *model.Message) *Bot {
 		processor: processor,
 	}
 }
+
+func NewPlaceBot(out chan *model.Message) *Bot {
+	in := make(chan *model.Message)
+
+	checker := NewRegexpChecker("\\Adate .*")
+
+	processor := &GooglePlacesProcessor{}
+
+	return &Bot{
+		name:      "placebot",
+		in:        in,
+		out:       out,
+		checker:   checker,
+		processor: processor,
+	}
+}

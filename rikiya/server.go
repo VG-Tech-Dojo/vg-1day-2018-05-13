@@ -84,6 +84,10 @@ func (s *Server) Init(dbconf, env string) error {
 	keywordBot := bot.NewKeywordBot(s.poster.In)
 	s.bots = append(s.bots, keywordBot)
 
+	// mission3
+	placeBot := bot.NewPlaceBot(s.poster.In)
+	s.bots = append(s.bots, placeBot)
+
 	return nil
 }
 
