@@ -16,3 +16,27 @@
 .isStamp {
 	font-size: 200px;
 }
+.emoji-inp, .emoji-inp label{
+	display:inline-block;
+	font-size:23px;
+}
+.emoji-inp input[type="radio"]{
+	display:none;
+}
+.emoji-inp input[type="radio"]:checked+label{
+	background-color:#f00;
+}
+.message-mode-tab, .message-mode-tab label{
+	display:inline-block;
+}
+.message-mode-tab label{
+	padding:5px 10px;
+	margin:5px;
+}
+.message-mode-tab input[type="radio"]:checked+label{
+	background-color:#f00;
+	color:#fff;
+}
+.message-mode-tab input[type="radio"]{
+	display:none;
+}
