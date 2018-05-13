@@ -74,7 +74,6 @@ func (m *Message) Create(c *gin.Context) {
 
 	// Tutorial 1-2. ユーザー名を追加しよう
 	// できる人は、ユーザー名が空だったら`anonymous`等適当なユーザー名で投稿するようにしてみよう
-
 	if msg.Username == "" {
 		msg.Username = "anonymous"
 	}
@@ -140,11 +139,10 @@ func (m *Message) DeleteByID(c *gin.Context) {
 	}
 
 	// bot対応
-	// m.Stream <- deleted
+	m.Stream <- deleted
 
 	c.JSON(http.StatusOK, gin.H{
 		"result": deleted,
 		"error":  nil,
 	})
-	// c.JSON(http.StatusOK, gin.H{})
 }
