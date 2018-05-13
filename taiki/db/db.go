@@ -3,10 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"os"
-	"gopkg.in/yaml.v2"
 )
 
 // Configs はdbconfig.ymlから複数のenvでConfigを読むためのmapです
