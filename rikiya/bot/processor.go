@@ -14,9 +14,31 @@ import (
 
 const (
 	keywordAPIURLFormat      = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
-	googlePlacesAPIURLFormat = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%f,%f&radius=%d&type=%s&key=%s"
+	googlePlacesAPIURLFormat = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%f,%f&radius=%d&type=%s&key=%s&language=ja"
 	GoogleMapsAPIURLFormat = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&address=%s"
 )
+
+var places = [][]string{
+	{
+		"restaurant",
+	},
+	{
+		"aquarium",
+		"park",
+		"museum",
+		"shopping_mall",
+	},
+	{
+		"cafe",
+	},
+}
+
+type GooglePlacesAPIResult struct {
+	Results []struct {
+		Name string `json:"name"`
+	} `json:"results"`
+}
+
 
 type (
 	// Processor はmessageを受け取り、投稿用messageを作るインターフェースです
@@ -88,10 +110,10 @@ func (p *GooglePlacesProcessor) Process(msgIn *model.Message) (*model.Message, e
 	r := regexp.MustCompile("\\Adate (.*)\\z")
 	matchedStrings := r.FindStringSubmatch(msgIn.Body)
 	text := matchedStrings[1]
-  
+
   // address -> lat,lng by Google maps api
-	url := fmt.Sprintf(GoogleMapsAPIURLFormat, env.GoogleMapsAPIID, url.QueryEscape(text))
-	res := &struct {
+	googleMapsAPIUrl := fmt.Sprintf(GoogleMapsAPIURLFormat, env.GoogleMapsAPIID, url.QueryEscape(text))
+	googleMapsAPIRes := &struct {
 		Results []struct {
 			Geometry struct {
 				Location struct {
@@ -101,24 +123,25 @@ func (p *GooglePlacesProcessor) Process(msgIn *model.Message) (*model.Message, e
 			} `json:"geometry"`
 		} `json:"results"`
 	}{}
-	get(url, &res)
-  
-  lat := res.Results[0].Geometry.Location.Lat
-  lng := res.Results[0].Geometry.Location.Lng
-// 	resp := fmt.Sprintf("lat : %f, lng : %f", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng)
+	get(googleMapsAPIUrl, &googleMapsAPIRes)
 
-	res = &struct {
-		Results []struct {
-			Name string `json:"name"`
-		} `json:"results"`
-	}{}
+  lat := googleMapsAPIRes.Results[0].Geometry.Location.Lat
+  lng := googleMapsAPIRes.Results[0].Geometry.Location.Lng
+	result_places := []string{}
+	for _, v := range places {
+		types := v[randIntn(len(v))]
 
-	url := fmt.Sprintf(googlePlacesAPIURLFormat, lat, lng, 2000, "cafe", env.GooglePlacesAPIAppID)
-
-	get(url, &res)
-	fmt.Println(url)
-
-	msg := fmt.Sprintf("%s : %v", text, res.Results)
+		var googlePlacesAPIRes GooglePlacesAPIResult
+		googlePlacesAPIUrl := fmt.Sprintf(googlePlacesAPIURLFormat, lat, lng, 2000, types, env.GooglePlacesAPIAppID)
+		// fmt.Print(googlePlacesAPIUrl)
+		get(googlePlacesAPIUrl, &googlePlacesAPIRes)
+		// fmt.Print(googlePlacesAPIRes)
+		spot := googlePlacesAPIRes.Results[randIntn(len(googlePlacesAPIRes.Results))]
+		// fmt.Print(spot)
+		result_places = append(result_places, spot.Name)
+	}
+	fmt.Print(result_places)
+	msg := fmt.Sprintf(strings.Join(result_places, "->"))
 	return &model.Message{
 		Body: msg,
 	}, nil
