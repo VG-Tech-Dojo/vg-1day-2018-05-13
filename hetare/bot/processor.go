@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strings"
 
+	"math/rand"
+
 	"fmt"
 
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/hetare/env"
@@ -29,6 +31,10 @@ type (
 
 	// KeywordProcessor はメッセージ本文からキーワードを抽出するprocessorの構造体です
 	KeywordProcessor struct{}
+
+	// KeywordProcessor はメッセージ本文からキーワードを抽出するprocessorの構造体です
+	GachaProcessor struct{}
+
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
@@ -77,4 +83,11 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 	return &model.Message{
 		Body: "キーワード：" + strings.Join(keywords, ", "),
 	}, nil
+}
+
+// Process はメッセージ本文からキーワードを抽出します
+func (p *GachaProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	lineup := []string{"SSR", "SR", "R", "N"}
+	randNo := rand.Intn(len(lineup))
+	return &model.Message{ Body: lineup[randNo], UserName: "天の人" }, nil
 }
