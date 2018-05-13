@@ -12,6 +12,10 @@
 .message-body .action-button:hover {
   color: #444444;
 }
+
+.isStamp {
+	font-size: 200px;
+}
 .emoji-inp, .emoji-inp label{
 	display:inline-block;
 	font-size:23px;
