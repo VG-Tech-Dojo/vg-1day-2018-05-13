@@ -6,14 +6,46 @@
 	 this.type = 0;
   };
 
+  Vue.component('emoji-sel', {
+	// Tutorial 1-1. ユーザー名を表示しよう
+	props: ['emoji', 'emojiradioid', 'value'],
+	data() {
+	  return {
+	  }
+	},
+	// Tutorial 1-1. ユーザー名を表示しよう
+	template: `
+	<div class="emoji-inp">
+		<input type="radio" name="emojiRadio" :id="emojiradioid" :value="emoji" v-model="updVal">
+		<label :for="emojiradioid">{{emoji}}</label>
+	</div>
+ `,
+	computed: {
+		updVal: {
+			get() {
+				return this.value
+			},
+			set(val) {
+				this.$emit('input', val)
+			}
+		}
+	}
+ });
+
+
+
   const app = new Vue({
     el: '#app',
     data: {
+		messageMode: 0,
       messages: [],
-      newMessage: new Message()
+		newMessage: new Message(),
+		emojiList: [..."😀😁😂🤣😃😄😅😆😉😊😋😎😍😘😗😙😚🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫😴😌😛😜😝"],
+		selectedEmoji: null,
     },
     created() {
-      this.getMessages();
+		this.getMessages();
+		console.log(this.moji);
     },
     methods: {
       getMessages() {
