@@ -15,6 +15,7 @@ import (
 const (
 	keywordAPIURLFormat      = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
 	googlePlacesAPIURLFormat = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%f,%f&radius=%d&type=%s&key=%s"
+	GoogleMapsAPIURLFormat = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&address=%s"
 )
 
 type (
@@ -87,14 +88,32 @@ func (p *GooglePlacesProcessor) Process(msgIn *model.Message) (*model.Message, e
 	r := regexp.MustCompile("\\Adate (.*)\\z")
 	matchedStrings := r.FindStringSubmatch(msgIn.Body)
 	text := matchedStrings[1]
-
+  
+  // address -> lat,lng by Google maps api
+	url := fmt.Sprintf(GoogleMapsAPIURLFormat, env.GoogleMapsAPIID, url.QueryEscape(text))
 	res := &struct {
+		Results []struct {
+			Geometry struct {
+				Location struct {
+					Lat float64 `json:"lat"`
+					Lng float64 `json:"lng"`
+				} `json:"location"`
+			} `json:"geometry"`
+		} `json:"results"`
+	}{}
+	get(url, &res)
+  
+  lat := res.Results[0].Geometry.Location.Lat
+  lng := res.Results[0].Geometry.Location.Lng
+// 	resp := fmt.Sprintf("lat : %f, lng : %f", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng)
+
+	res = &struct {
 		Results []struct {
 			Name string `json:"name"`
 		} `json:"results"`
 	}{}
 
-	url := fmt.Sprintf(googlePlacesAPIURLFormat, 35.66, 139.69, 500, "cafe", env.GooglePlacesAPIAppID)
+	url := fmt.Sprintf(googlePlacesAPIURLFormat, lat, lng, 2000, "cafe", env.GooglePlacesAPIAppID)
 
 	get(url, &res)
 	fmt.Println(url)
