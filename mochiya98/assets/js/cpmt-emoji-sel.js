@@ -1,16 +1,16 @@
-Vue.component('emoji-sel', {
+Vue.component("emoji-sel", {
 	props: {
 		emoji: {
-			type:String,
-			required:true,
+			type    : String,
+			required: true,
 		},
 		emojiRadioId: {
-			type:String,
-			required:true,
+			type    : String,
+			required: true,
 		},
 		value: {
-			type:String,
-			required:true,
+			type    : String,
+			required: true,
 		},
 	},
 	template: `
@@ -21,12 +21,12 @@ Vue.component('emoji-sel', {
 	`,
 	computed: {
 		updVal: {
-			get() {
-				return this.value
+			get(){
+				return this.value;
 			},
-			set(val) {
-				this.$emit('input', val)
-			}
-		}
-	}
- });
+			set(val){
+				this.$emit("input", val);
+			},
+		},
+	},
+});
