@@ -2,7 +2,8 @@
   'use strict';
   const Message = function() {
     this.body = ''
-    this.username = ''
+	 this.username = ''
+	 this.type = 0;
   };
 
   const app = new Vue({
@@ -20,6 +21,7 @@
 			this.messages = data.result;
 			for(let i=data.result.length;i--;){
 				let type=~~(Math.random()*2);
+				data.result[i].type=0;
 				if(type===1){
 					data.result[i].type=1;
 					data.result[i].body="絵";
