@@ -70,6 +70,9 @@ func (s *Server) Init(dbconf, env string) error {
 	api.PUT("/messages/:id", mctr.UpdateByID)
 	api.DELETE("/messages/:id", mctr.DeleteByID)
 
+	//選択した子供の一覧ページに遷移
+	api.GET("/chilren/:id", mctr.GetChildren)
+
 	// bot
 	mc := bot.NewMulticaster(msgStream)
 	s.multicaster = mc

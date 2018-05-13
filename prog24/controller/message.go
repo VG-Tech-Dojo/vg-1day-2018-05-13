@@ -35,6 +35,27 @@ func (m *Message) All(c *gin.Context) {
 	})
 }
 
+// idを渡すと, そのメッセージの子供のリストを返す
+func (m *Message) GetChildren(c *gin.Context){
+	msgs, err := model.ChildrenMessagesByID(m.DB, c.Param("id"))
+
+	if err != nil {
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	if len(msgs) == 0 {
+		c.JSON(http.StatusOK, make([]*model.Message, 0))
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": msgs,
+		"error":  nil,
+	})
+}
+
 // GetByID はパラメーターで受け取ったidのメッセージを取得してJSONで返します
 func (m *Message) GetByID(c *gin.Context) {
 	msg, err := model.MessageByID(m.DB, c.Param("id"))

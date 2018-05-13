@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="message-body" v-else>
-        <span>{{ body }} - {{ username }}</span>
+        <span>{{ id }} {{ body }} + {{ username }}</span>
         <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
         <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
       </div>
@@ -87,19 +87,22 @@
           });
       },
       removeMessage(id) {
-        return fetch(`/api/messages/${id}`, {
-          method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(response => {
-          if (response.error) {
-            alert(response.error.message);
-            return;
-          }
-          this.messages = this.messages.filter(m => {
-            return m.id !== id
-          })
-        })
+        // return fetch(`/api/messages/${id}`, {
+        //   method: 'DELETE'
+        // })
+        // .then(response => response.json())
+        // .then(response => {
+        //   if (response.error) {
+        //     alert(response.error.message);
+        //     return;
+        //   }
+        //   this.messages = this.messages.filter(m => {
+        //     return m.id !== id
+        //   })
+        // })
+          fetch('/api/children/${id}').then(response => response.json()).then(data => {
+              this.messages = data.result;
+          });
       },
       updateMessage(updatedMessage) {
         return fetch(`/api/messages/${updatedMessage.id}`, {
