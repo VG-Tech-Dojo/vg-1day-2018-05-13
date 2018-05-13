@@ -126,13 +126,14 @@ func (t *Twitter) get(url string, params map[string]string) (interface{}, error)
 	return result, err
 }
 
-func twitterGet(url string) (msg string, err error) {
+func twitterGet(key string) (msg string, err error) {
 	twitter := NewTwitter(env.TwitterConsumerKey, env.TwitterConsumerSecret, env.TwitterAccessToken, env.TwitterTokenSecret)
 
 	// ホームタイムラインを取得
+	params := map[string]string{"q": key}
 	res, err := twitter.get(
-		"https://api.twitter.com/1.1/statuses/home_timeline.json", // Resource URL
-		map[string]string{})                                       // Parameters
+		"https://api.twitter.com/1.1/statuses/search/universal.json", // Resource URL
+		params) // Parameters
 	if err != nil {
 		log.Fatal(err)
 	}
