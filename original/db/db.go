@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-
 	"gopkg.in/yaml.v2"
 )
 
@@ -54,3 +53,4 @@ func NewConfigs(r io.Reader) (Configs, error) {
 	}
 	return configs, nil
 }
+>>>>>>> 492dc386831b32b6ff675da193ee2b6fa50c9c68

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/rikiya/httputil"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/rikiya/model"
 	"github.com/gin-gonic/gin"
@@ -95,7 +96,18 @@ func (m *Message) Create(c *gin.Context) {
 func (m *Message) UpdateByID(c *gin.Context) {
 	// Mission 1-1. メッセージを編集しよう
 	// ...
-	c.JSON(http.StatusCreated, gin.H{})
+	var msg model.Message
+
+	updated, err := msg.Update(m.DB)
+	if err != nil {
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{
+		"result": updated,
+		"error":  nil,
+	})
 }
 
 // DeleteByID は...
