@@ -14,6 +14,7 @@ import (
 
 const (
 	keywordAPIURLFormat = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
+	talkAPIURLEndpoint  = "https://api.a3rt.recruit-tech.co.jp/talk/v1/smalltalk"
 )
 
 type (
@@ -33,12 +34,16 @@ type (
 
 	// GachaProcessor は"SSレア", "Sレア", "レア", "ノーマル"のいずれかをランダムで作るprocessorの構造体です
 	GachaProcessor struct{}
+
+	// TalkProcessor はメッセージ本文からキーワードを抽出するprocessorの構造体です
+	TalkProcessor struct{}
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
 func (p *HelloWorldProcessor) Process(msgIn *model.Message) (*model.Message, error) {
 	return &model.Message{
-		Body: msgIn.Body + ", world!",
+		Body:     msgIn.Body + ", world!",
+		UserName: "HelloBot",
 	}, nil
 }
 
@@ -54,7 +59,8 @@ func (p *OmikujiProcessor) Process(msgIn *model.Message) (*model.Message, error)
 	}
 	result := fortunes[randIntn(len(fortunes))]
 	return &model.Message{
-		Body: result,
+		Body:     result,
+		UserName: "OmikujiBot",
 	}, nil
 }
 
@@ -79,7 +85,8 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 	}
 
 	return &model.Message{
-		Body: "キーワード：" + strings.Join(keywords, ", "),
+		Body:     "キーワード：" + strings.Join(keywords, ", "),
+		UserName: "KeywordBot",
 	}, nil
 }
 
@@ -93,6 +100,41 @@ func (p *GachaProcessor) Process(msgIn *model.Message) (*model.Message, error) {
 	}
 	result := fortunes[randIntn(len(fortunes))]
 	return &model.Message{
-		Body: result,
+		Body:     result,
+		UserName: "GachaBot",
+	}, nil
+}
+
+// Process はメッセージ本文からキーワードを抽出します
+func (p *TalkProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	r := regexp.MustCompile("\\Atalk (.*)\\z")
+	matchedStrings := r.FindStringSubmatch(msgIn.Body)
+	text := matchedStrings[1]
+
+	type talkAPIResponseResult struct {
+		Perplexity float64 `json:"perplexity"`
+		Reply      string  `json:"reply"`
+	}
+	type talkAPIResponse struct {
+		Status  int64                   `json:"status"`
+		Message string                  `json:"message"`
+		Results []talkAPIResponseResult `json:"results"`
+	}
+	var json talkAPIResponse
+
+	requestBody := url.Values{}
+	requestBody.Add("apikey", env.TalkAPIApiKey)
+	requestBody.Add("query", text)
+
+	post(talkAPIURLEndpoint, requestBody, &json)
+
+	replies := []string{}
+	for _, element := range json.Results {
+		replies = append(replies, element.Reply)
+	}
+
+	return &model.Message{
+		Body:     "返事: " + strings.Join(replies, ", "),
+		UserName: "TalkBot",
 	}, nil
 }
