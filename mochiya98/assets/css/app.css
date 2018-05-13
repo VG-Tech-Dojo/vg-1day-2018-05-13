@@ -14,7 +14,8 @@
 }
 
 .isStamp {
-	font-size: 200px;
+	font-size: 100px;
+	line-height:1;
 }
 .emoji-inp, .emoji-inp label{
 	display:inline-block;
