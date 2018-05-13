@@ -105,5 +105,20 @@ func (m *Message) UpdateByID(c *gin.Context) {
 func (m *Message) DeleteByID(c *gin.Context) {
 	// Mission 1-2. メッセージを削除しよう
 	// ...
-	c.JSON(http.StatusOK, gin.H{})
+	err := model.RemoveByID(m.DB, c.Param("id"))
+
+	switch {
+	case err == sql.ErrNoRows:
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusNotFound, resp)
+		return
+	case err != nil:
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusNotFound, resp)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"error": nil,
+	})
 }
