@@ -26,19 +26,19 @@
     </div>
     <div class="row">
 		 	<div class="message-mode-tab">
-				<input type="radio" id="messageMode0" value="0" v-model="newMessage.type">
+				<input type="radio" id="messageMode0" :value="0" v-model="newMessage.type">
 				<label for="messageMode0">テキスト入力</label>
 			</div>
 			<div class="message-mode-tab">
-				<input type="radio" id="messageMode1" value="1" v-model="newMessage.type">
+				<input type="radio" id="messageMode1" :value="1" v-model="newMessage.type">
 				<label for="messageMode1">Emoji</label>
 			</div>
-			<template v-if="newMessage.type==0">
+			<template v-if="newMessage.type===0">
 				<textarea class="u-full-width" v-model="newMessage.body" placeholder="メッセージ"></textarea>
 			</template>
-			<div class="emoji_selector" v-if="newMessage.type==1">
-				<span class="emoji_selector_emoji" v-for="(emoji,key) in emojiList">
-					<emoji-sel :emoji="emoji" :emojiradioid="`emoji${key}`" v-model="newMessage.body"></emoji-sel>
+			<div class="emoji_selector" v-if="newMessage.type===1">
+				<span class="emoji_selector_emoji" v-for="(emoji,index) in emojiList">
+					<emoji-sel :emoji="emoji" :emoji-radio-id="`emoji_${index}`" v-model="newMessage.body"></emoji-sel>
 				</span>
 			</div>
 							<!-- Tutorial 1-2. ユーザー名を追加しよう -->
