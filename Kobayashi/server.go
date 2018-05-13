@@ -8,15 +8,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/bot"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/controller"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/db"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/model"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/Kobayashi/bot"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/Kobayashi/controller"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/Kobayashi/db"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/Kobayashi/model"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Server はAPIサーバーが実装された構造体です
 type Server struct {
 	db          *sql.DB
 	Engine      *gin.Engine
@@ -25,14 +24,12 @@ type Server struct {
 	bots        []*bot.Bot
 }
 
-// NewServer は新しいServerの構造体のポインタを返します
 func NewServer() *Server {
 	return &Server{
 		Engine: gin.Default(),
 	}
 }
 
-// Init はサーバーを初期化します
 func (s *Server) Init(dbconf, env string) error {
 	cs, err := db.NewConfigsFromFile(dbconf)
 	if err != nil {
@@ -52,7 +49,6 @@ func (s *Server) Init(dbconf, env string) error {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
 	s.Engine.Static("/assets", "./assets")
-
 	// tutorial. 自己紹介を追加する
 	// ...
 
@@ -91,12 +87,10 @@ func (s *Server) Init(dbconf, env string) error {
 func (s *Server) Close() error {
 	return s.db.Close()
 }
-
 // Run はサーバーを起動します
 func (s *Server) Run(port string) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	// botを起動
 	go s.multicaster.Run(ctx)
 	go s.poster.Run(ctx, fmt.Sprintf("http://0.0.0.0:%s", port))
