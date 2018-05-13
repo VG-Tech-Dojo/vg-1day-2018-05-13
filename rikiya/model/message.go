@@ -77,7 +77,6 @@ func (m *Message) Update(db *sql.DB) (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	id, err := res.LastInsertId()
 	if err != nil {
 		return nil, err
@@ -92,3 +91,11 @@ func (m *Message) Update(db *sql.DB) (*Message, error) {
 
 // Mission 1-2. メッセージを削除しよう
 // ...
+func (m *Message) Delete(db *sql.DB, id string) error {
+	_, err := db.Exec(`delete from message where id = ?`, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
