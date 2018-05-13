@@ -129,7 +129,22 @@ func (m *Message) UpdateByID(c *gin.Context) {
 
 // DeleteByID は...
 func (m *Message) DeleteByID(c *gin.Context) {
-	// Mission 1-2. メッセージを削除しよう
-	// ...
-	c.JSON(http.StatusOK, gin.H{})
+	var msg model.Message
+
+	// paramからidを取得
+	deleted, err := msg.Delete(m.DB, c.Param("id"))
+	if err != nil {
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	// bot対応
+	// m.Stream <- deleted
+
+	c.JSON(http.StatusOK, gin.H{
+		"result": deleted,
+		"error":  nil,
+	})
+	// c.JSON(http.StatusOK, gin.H{})
 }
