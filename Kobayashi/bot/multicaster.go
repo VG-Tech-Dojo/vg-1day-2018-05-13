@@ -3,7 +3,7 @@ package bot
 import (
 	"context"
 
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/model"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/Kobayashi/model"
 )
 
 // Multicaster は1つのチャンネルで複数botを動かすためのヘルパーです
