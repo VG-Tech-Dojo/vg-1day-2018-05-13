@@ -13,6 +13,7 @@ import (
 
 const (
 	keywordAPIURLFormat = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
+	talkAPIURL          = "https://api.a3rt.recruit-tech.co.jp/talk/v1/smalltalk"
 )
 
 type (
@@ -31,7 +32,9 @@ type (
 	KeywordProcessor struct{}
 
 	// GachaProcesseor はレア度のいずれかをランダムで作るprocessorの構造体です
-	GachaProcesseor struct{}
+	GachaProcessor struct{}
+
+	TalkProcessor struct{}
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
@@ -82,7 +85,7 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 	}, nil
 }
 
-func (p *GachaProcesseor) Process(msgIn *model.Message) (*model.Message, error) {
+func (p *GachaProcessor) Process(msgIn *model.Message) (*model.Message, error) {
 	fortunes := []string{
 		"SSレア",
 		"Sレア",
@@ -92,5 +95,35 @@ func (p *GachaProcesseor) Process(msgIn *model.Message) (*model.Message, error) 
 	result := fortunes[randIntn(len(fortunes))]
 	return &model.Message{
 		Body: result,
+	}, nil
+}
+
+func (p *TalkProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	r := regexp.MustCompile("\\Atalk (.*)\\z")
+	matchedStrings := r.FindStringSubmatch(msgIn.Body)
+	text := matchedStrings[1]
+
+	res := &struct {
+		Status  int64  `json:"status"`
+		Message string `json:"message"`
+		Results []struct {
+			Perplexity float64 `json:"perplexity"`
+			Reply      string  `json:"reply"`
+		} `json:"results"`
+	}{}
+
+	params := url.Values{}
+	params.Set("apikey", env.TalkAPIKey)
+	params.Add("query", text)
+
+	post(talkAPIURL, params, res)
+
+	if res.Status != 0 {
+		return nil, fmt.Errorf("%#v", res)
+	}
+
+	return &model.Message{
+		Body:     "TalkAPI：" + res.Results[0].Reply,
+		UserName: "talkbot",
 	}, nil
 }
