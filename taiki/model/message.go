@@ -53,6 +53,7 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 // Insert はmessageテーブルに新規データを1件追加します
 func (m *Message) Insert(db *sql.DB) (*Message, error) {
 	// Tutorial 1-2. ユーザー名を追加しよう
+	//TODO: SQLがわからない
 	res, err := db.Exec(`insert into message (body, username) values (?, ?)`, m.Body, m.UserName)
 	if err != nil {
 		return nil, err
@@ -72,6 +73,18 @@ func (m *Message) Insert(db *sql.DB) (*Message, error) {
 
 // Mission 1-1. メッセージを編集しよう
 // ...
+func (m *Message) Update(db *sql.DB) (*Message, error) {
+	_, err := db.Exec(`update message set body=? where id = ?`, m.Body, m.ID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Message{
+		ID:   m.ID,
+		Body: m.Body,
+	}, nil
+}
 
 // Mission 1-2. メッセージを削除しよう
 // ...
