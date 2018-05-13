@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	keywordAPIURLFormat = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
+	keywordAPIURLFormat      = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
+	googlePlacesAPIURLFormat = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=%f,%f&radius=%d&type=%s&key=%s"
 )
 
 type (
@@ -87,7 +88,19 @@ func (p *GooglePlacesProcessor) Process(msgIn *model.Message) (*model.Message, e
 	matchedStrings := r.FindStringSubmatch(msgIn.Body)
 	text := matchedStrings[1]
 
+	res := &struct {
+		Results []struct {
+			Name string `json:"name"`
+		} `json:"results"`
+	}{}
+
+	url := fmt.Sprintf(googlePlacesAPIURLFormat, 35.66, 139.69, 500, "cafe", env.GooglePlacesAPIAppID)
+
+	get(url, &res)
+	fmt.Println(url)
+
+	msg := fmt.Sprintf("%s : %v", text, res.Results)
 	return &model.Message{
-		Body: text,
+		Body: msg,
 	}, nil
 }
