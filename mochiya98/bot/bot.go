@@ -100,3 +100,37 @@ func NewKeywordBot(out chan *model.Message) *Bot {
 		processor: processor,
 	}
 }
+
+// NewGachaBot は"SSレア", "Sレア", "レア", "ノーマル"のいずれかをランダムで返す新しいBotの構造体のポインタを返します
+func NewGachaBot(out chan *model.Message) *Bot {
+	in := make(chan *model.Message)
+
+	checker := NewRegexpChecker("\\Agacha\\z")
+
+	processor := &GachaProcessor{}
+
+	return &Bot{
+		name:      "gachabot",
+		in:        in,
+		out:       out,
+		checker:   checker,
+		processor: processor,
+	}
+}
+
+// NewTalkBot はメッセージに対する返信返す新しいBotの構造体のポインタを返します
+func NewTalkBot(out chan *model.Message) *Bot {
+	in := make(chan *model.Message)
+
+	checker := NewRegexpChecker("\\Atalk .*")
+
+	processor := &TalkProcessor{}
+
+	return &Bot{
+		name:      "talkbot",
+		in:        in,
+		out:       out,
+		checker:   checker,
+		processor: processor,
+	}
+}
