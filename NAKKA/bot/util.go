@@ -130,15 +130,16 @@ func twitterGet(key string) (msg string, err error) {
 	twitter := NewTwitter(env.TwitterConsumerKey, env.TwitterConsumerSecret, env.TwitterAccessToken, env.TwitterTokenSecret)
 
 	// ホームタイムラインを取得
-	params := map[string]string{"q": key}
+	params := map[string]string{"q": key + "from:ochyai", "modules": "status", "count": "1", "result_type": "recent"}
 	res, err := twitter.get(
-		"https://api.twitter.com/1.1/statuses/search/universal.json", // Resource URL
+		"https://api.twitter.com/1.1/search/tweets.json", // Resource URL
 		params) // Parameters
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("twi: %v\n", res)
 
-	for _, val := range res.([]interface{}) {
+	for _, val := range res.(map[string]interface{}) {
 		tweet, _ := val.(map[string]interface{})
 		fmt.Println(tweet["text"])
 	}
