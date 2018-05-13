@@ -3,11 +3,12 @@
   const Message = function() {
     this.body = ''
     this.username = ''
+    this.parentid = ''
   };
 
   Vue.component('message', {
     // Tutorial 1-1. ユーザー名を表示しよう
-    props: ['id', 'body', 'username', 'removeMessage', 'updateMessage'],
+    props: ['id', 'body', 'username', 'parentid', 'removeMessage', 'updateMessage'],
     data() {
       return {
         editing: false,
@@ -69,9 +70,19 @@
       },
       sendMessage() {
         const message = this.newMessage;
+        var json = JSON.stringify(message);
+
+        console.log(json)
+
+        if(json.parentid == null){
+            json.parentid = -1;
+        }
+
+          console.log(json)
+
         fetch('/api/messages', {
           method: 'POST',
-          body: JSON.stringify(message)
+          body: json
         })
           .then(response => response.json())
           .then(response => {

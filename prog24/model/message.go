@@ -17,7 +17,7 @@ type Message struct {
 func MessagesAll(db *sql.DB) ([]*Message, error) {
 
 	// Tutorial 1-1. ユーザー名を表示しよう
-	rows, err := db.Query(`select id, body, username, parentid from message`)
+	rows, err := db.Query(`select id, body, username, parent_message_id from message`)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 	m := &Message{}
 
 	// Tutorial 1-1. ユーザー名を表示しよう
-	if err := db.QueryRow(`select id, body, username, parentid from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName, &m.ParentID); err != nil {
+	if err := db.QueryRow(`select id, body, username, parent_message_id from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName, &m.ParentID); err != nil {
 		return nil, err
 	}
 
@@ -54,7 +54,12 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 // Insert はmessageテーブルに新規データを1件追加します
 func (m *Message) Insert(db *sql.DB) (*Message, error) {
 	// Tutorial 1-2. ユーザー名を追加しよう
-	res, err := db.Exec(`insert into message (body, username, parentid) values (?, ?, ?)`, m.Body, m.UserName, &m.ParentID)
+
+	//if m.ParentID == nil {
+	//	m.ParentID = -1
+	//}
+	//
+	res, err := db.Exec(`insert into message (body, username, parent_message_id) values (?, ?, ?)`, m.Body, m.UserName, &m.ParentID)
 	if err != nil {
 		return nil, err
 	}
