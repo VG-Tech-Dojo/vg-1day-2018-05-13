@@ -150,13 +150,11 @@ func (p *YoichiProcessor) Process(msgIn *model.Message) (*model.Message, error) 
 	}
 
 
-	for s := range keywords{
-		// 以下を決して呼び出し
-		fmt.Println(s)
-	}
+	res,_ := twitterGet(keywords[0])
+	myBody := []string{res}
 
 	return &model.Message{
-		Body: strings.Join(keywords, ", "),
+		Body: strings.Join(myBody, ", "),
 		UserName: "Yoichi Ochiai",
 	}, nil
 }
