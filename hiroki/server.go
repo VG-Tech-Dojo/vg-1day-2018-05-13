@@ -1,4 +1,4 @@
-			package main
+package main
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/bot"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/controller"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/db"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/original/model"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/hiroki/bot"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/hiroki/controller"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/hiroki/db"
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/hiroki/model"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
