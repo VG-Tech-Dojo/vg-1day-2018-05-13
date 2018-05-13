@@ -45,20 +45,20 @@
     },
     created() {
 		this.getMessages();
-		console.log(this.moji);
+		//console.log(this.moji);
     },
     methods: {
       getMessages() {
         fetch('/api/messages').then(response => response.json()).then(data => {
 			this.messages = data.result;
-			for(let i=data.result.length;i--;){
+			/*for(let i=data.result.length;i--;){
 				let type=~~(Math.random()*2);
 				data.result[i].type=0;
 				if(type===1){
 					data.result[i].type=1;
 					data.result[i].body="絵";
 				}
-			}
+			}*/
         });
       },
       sendMessage() {

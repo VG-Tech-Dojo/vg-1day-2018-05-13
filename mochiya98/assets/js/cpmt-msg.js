@@ -19,8 +19,8 @@ Vue.component('message', {
 	  </div>
 	  <div class="message-body" v-else>
 		 <span><span v-bind:class="{isStamp: type}">{{ body }}</span> - {{ username }}</span>
-		 <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
 		 <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
+		 <span v-if="!type" class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
 	  </div>
 	</div>
  `,
@@ -37,8 +37,8 @@ Vue.component('message', {
 		 this.editedBody = null
 	  },
 	  doneEdit() {
-		 const {id, editedBody:body, username} = this;
-		 this.updateMessage({id, body, username})
+		 const {id, editedBody:body, username, type} = this;
+		 this.updateMessage({id, body, username, type})
 			.then(response => {
 			  this.cancelEdit()
 			})
