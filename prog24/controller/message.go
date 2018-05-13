@@ -3,10 +3,10 @@ package controller
 import (
 	"database/sql"
 	"errors"
-	"net/http"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/prog24/httputil"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/prog24/model"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Message is controller for requests to messages
@@ -74,6 +74,9 @@ func (m *Message) Create(c *gin.Context) {
 
 	// Tutorial 1-2. ユーザー名を追加しよう
 	// できる人は、ユーザー名が空だったら`anonymous`等適当なユーザー名で投稿するようにしてみよう
+	if len(msg.UserName) == 0 {
+		msg.UserName = "anonymous"
+	}
 
 	inserted, err := msg.Insert(m.DB)
 	if err != nil {
