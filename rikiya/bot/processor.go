@@ -14,6 +14,8 @@ import (
 
 const (
 	keywordAPIURLFormat = "https://jlp.yahooapis.jp/KeyphraseService/V1/extract?appid=%s&sentence=%s&output=json"
+
+	GoogleMapsAPIURLFormat = "https://maps.googleapis.com/maps/api/geocode/json?key=%s&address=%s"
 )
 
 type (
@@ -87,7 +89,22 @@ func (p *GooglePlacesProcessor) Process(msgIn *model.Message) (*model.Message, e
 	matchedStrings := r.FindStringSubmatch(msgIn.Body)
 	text := matchedStrings[1]
 
+	// address -> lat,lng by Google maps api
+	url := fmt.Sprintf(GoogleMapsAPIURLFormat, env.GoogleMapsAPIID, url.QueryEscape(text))
+	res := &struct {
+		Results []struct {
+			Geometry struct {
+				Location struct {
+					Lat float64 `json:"lat"`
+					Lng float64 `json:"lng"`
+				} `json:"location"`
+			} `json:"geometry"`
+		} `json:"results"`
+	}{}
+	get(url, &res)
+
+	resp := fmt.Sprintf("lat : %f, lng : %f", res.Results[0].Geometry.Location.Lat, res.Results[0].Geometry.Location.Lng)
 	return &model.Message{
-		Body: text,
+		Body: resp,
 	}, nil
 }
