@@ -6,9 +6,10 @@ import (
 
 	"fmt"
 
+	"net/url"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/rikiya/env"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/rikiya/model"
-	"net/url"
 )
 
 const (
@@ -29,6 +30,9 @@ type (
 
 	// KeywordProcessor はメッセージ本文からキーワードを抽出するprocessorの構造体です
 	KeywordProcessor struct{}
+
+	// GachaProcessor は"SSレア","Sレア","レア","ノーマル"をランダムで作るprocessorの構造体
+	GachaProcessor struct{}
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
@@ -76,5 +80,19 @@ func (p *KeywordProcessor) Process(msgIn *model.Message) (*model.Message, error)
 
 	return &model.Message{
 		Body: "キーワード：" + strings.Join(keywords, ", "),
+	}, nil
+}
+
+// Process は"SSレア","Sレア","レア","ノーマル"をランダムにセットされたメッセージへのポインタを返す
+func (p *GachaProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	gachas := []string{
+		"SSレア",
+		"Sレア",
+		"レア",
+		"ノーマル",
+	}
+	result := gachas[randIntn(len(gachas))]
+	return &model.Message{
+		Body: result,
 	}, nil
 }
