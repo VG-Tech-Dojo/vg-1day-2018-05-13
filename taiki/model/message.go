@@ -8,7 +8,6 @@ import (
 type Message struct {
 	ID   int64  `json:"id"`
 	Body string `json:"body"`
-	// Tutorial 1-1. ユーザー名を表示しよう
 	UserName string `json:"username"`
 }
 
@@ -43,7 +42,7 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 	m := &Message{}
 
 	// Tutorial 1-1. ユーザー名を表示しよう
-	if err := db.QueryRow(`select id, body from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName); err != nil {
+	if err := db.QueryRow(`select id, body, username from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName); err != nil {
 		return nil, err
 	}
 
@@ -53,7 +52,6 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 // Insert はmessageテーブルに新規データを1件追加します
 func (m *Message) Insert(db *sql.DB) (*Message, error) {
 	// Tutorial 1-2. ユーザー名を追加しよう
-	//TODO: SQLがわからない
 	res, err := db.Exec(`insert into message (body, username) values (?, ?)`, m.Body, m.UserName)
 	if err != nil {
 		return nil, err
@@ -73,18 +71,29 @@ func (m *Message) Insert(db *sql.DB) (*Message, error) {
 
 // Mission 1-1. メッセージを編集しよう
 // ...
-func (m *Message) Update(db *sql.DB) (*Message, error) {
-	_, err := db.Exec(`update message set body=? where id = ?`, m.Body, m.ID)
+func (m *Message) Update(db *sql.DB, id string) (*Message, error) {
+	_, err := db.Exec(`update message set body=? where id = ?`, m.Body, id)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &Message{
-		ID:   m.ID,
-		Body: m.Body,
-	}, nil
+	res, err := MessageByID(db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // Mission 1-2. メッセージを削除しよう
 // ...
+func (m *Message) Delete(db *sql.DB, id string) error {
+	_, err := db.Exec(`delete from message where id = ?`, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
