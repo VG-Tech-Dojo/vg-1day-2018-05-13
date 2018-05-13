@@ -104,7 +104,7 @@ func NewTwitter(consumerKey, consumerSecret, accessToken, accessTokenSecret stri
 			AuthorizeTokenUrl: "https://api.twitter.com/oauth/authorize",
 			AccessTokenUrl:    "https://api.twitter.com/oauth/access_token",
 		})
-	twitter.accessToken = &oauth.AccessToken{accessToken, accessTokenSecret}
+	twitter.accessToken = &oauth.AccessToken{accessToken, accessTokenSecret, make(map[string]string)}
 	return twitter
 }
 
