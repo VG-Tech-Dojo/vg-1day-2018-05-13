@@ -8,14 +8,16 @@ import (
 type Message struct {
 	ID   int64  `json:"id"`
 	Body string `json:"body"`
-	// 1-1. ユーザー名を表示しよう
+	// Tutorial 1-1. ユーザー名を表示しよう
+	// ユーザ名を構造体に追加
+	UserName string `json:"username"`
 }
 
 // MessagesAll は全てのメッセージを返します
 func MessagesAll(db *sql.DB) ([]*Message, error) {
 
-	// 1-1. ユーザー名を表示しよう
-	rows, err := db.Query(`select id, body from message`)
+	// Tutorial 1-1. ユーザー名を表示しよう
+	rows, err := db.Query(`select id, body, username from message`)
 	if err != nil {
 		return nil, err
 	}
@@ -24,8 +26,8 @@ func MessagesAll(db *sql.DB) ([]*Message, error) {
 	var ms []*Message
 	for rows.Next() {
 		m := &Message{}
-		// 1-1. ユーザー名を表示しよう
-		if err := rows.Scan(&m.ID, &m.Body); err != nil {
+		// Tutorial 1-1. ユーザー名を表示しよう
+		if err := rows.Scan(&m.ID, &m.Body, &m.UserName); err != nil {
 			return nil, err
 		}
 		ms = append(ms, m)
@@ -41,8 +43,8 @@ func MessagesAll(db *sql.DB) ([]*Message, error) {
 func MessageByID(db *sql.DB, id string) (*Message, error) {
 	m := &Message{}
 
-	// 1-1. ユーザー名を表示しよう
-	if err := db.QueryRow(`select id, body from message where id = ?`, id).Scan(&m.ID, &m.Body); err != nil {
+	// Tutorial 1-1. ユーザー名を表示しよう
+	if err := db.QueryRow(`select id, body, username from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName); err != nil {
 		return nil, err
 	}
 
@@ -51,8 +53,8 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 
 // Insert はmessageテーブルに新規データを1件追加します
 func (m *Message) Insert(db *sql.DB) (*Message, error) {
-	// 1-2. ユーザー名を追加しよう
-	res, err := db.Exec(`insert into message (body) values (?)`, m.Body)
+	// Tutorial 1-2. ユーザー名を追加しよう
+	res, err := db.Exec(`insert into message (body, username) values (?, ?)`, m.Body, m.UserName)
 	if err != nil {
 		return nil, err
 	}
@@ -64,12 +66,30 @@ func (m *Message) Insert(db *sql.DB) (*Message, error) {
 	return &Message{
 		ID:   id,
 		Body: m.Body,
-		// 1-2. ユーザー名を追加しよう
+		// Tutorial 1-2. ユーザー名を追加しよう
+		UserName: m.UserName,
 	}, nil
 }
 
-// 1-3. メッセージを編集しよう
-// ...
+// Mission 1-1. メッセージを編集しよう
+func (m *Message) UpdateByID(db *sql.DB, id string) (*Message, error) {
+	_, err := db.Exec(`update message set body = ? where id = ?`, m.Body, id)
+	if err != nil {
+		return nil, err
+	}
 
-// 1-4. メッセージを削除しよう
-// ...
+	msg, err := MessageByID(db, id)
+	if err != nil {
+		return nil, err
+	}
+	return msg, nil
+}
+
+// Mission 1-2. メッセージを削除しよう
+func DeleteByID(db *sql.DB, id string) error {
+	_, err := db.Exec(`delete from message where id = ?`, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
