@@ -52,15 +52,12 @@ func (s *Server) Init(dbconf, env string) error {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
 	})
 
-	// add piro's page
-	s.Engine.GET("/piro", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "piro.html", gin.H{})
-	})
-
 	s.Engine.Static("/assets", "./assets")
 
 	// tutorial. 自己紹介を追加する
-	// ...
+	s.Engine.GET("/piro", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "piro.html", gin.H{})
+	})
 
 	// api
 	api := s.Engine.Group("/api")
@@ -89,6 +86,8 @@ func (s *Server) Init(dbconf, env string) error {
 	s.bots = append(s.bots, omikujiBot)
 	keywordBot := bot.NewKeywordBot(s.poster.In)
 	s.bots = append(s.bots, keywordBot)
+	gachaBot := bot.NewGachaBot(s.poster.In)
+	s.bots = append(s.bots, gachaBot)
 
 	return nil
 }
