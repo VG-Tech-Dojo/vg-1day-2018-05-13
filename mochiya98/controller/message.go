@@ -95,6 +95,22 @@ func (m *Message) Create(c *gin.Context) {
 // UpdateByID は...
 func (m *Message) UpdateByID(c *gin.Context) {
 	// Mission 1-1. メッセージを編集しよう
+
+	//check exist
+	_, err := model.MessageByID(m.DB, c.Param("id"))
+
+	switch {
+	case err == sql.ErrNoRows:
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusNotFound, resp)
+		return
+	case err != nil:
+		resp := httputil.NewErrorResponse(err)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	//get request body
 	var msg model.Message
 
 	if c.Request.ContentLength == 0 {
@@ -115,6 +131,7 @@ func (m *Message) UpdateByID(c *gin.Context) {
 		msg.UserName = "anonymous"
 	}
 
+	//update commit
 	updated, err := msg.Update(m.DB)
 	if err != nil {
 		resp := httputil.NewErrorResponse(err)
