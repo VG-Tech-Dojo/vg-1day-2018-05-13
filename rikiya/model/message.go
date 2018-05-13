@@ -43,7 +43,7 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 	m := &Message{}
 
 	// Tutorial 1-1. ユーザー名を表示しよう
-	if err := db.QueryRow(`select id, body from message where id = ?`, id).Scan(&m.ID, &m.Body); err != nil {
+	if err := db.QueryRow(`select id, body, username from message where id = ?`, id).Scan(&m.ID, &m.Body, &m.UserName); err != nil {
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func MessageByID(db *sql.DB, id string) (*Message, error) {
 // Insert はmessageテーブルに新規データを1件追加します
 func (m *Message) Insert(db *sql.DB) (*Message, error) {
 	// Tutorial 1-2. ユーザー名を追加しよう
-	res, err := db.Exec(`insert into message (body) values (?)`, m.Body)
+	res, err := db.Exec(`insert into message (body, username) values (?, ?)`, m.Body, m.UserName)
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +66,7 @@ func (m *Message) Insert(db *sql.DB) (*Message, error) {
 		ID:   id,
 		Body: m.Body,
 		// Tutorial 1-2. ユーザー名を追加しよう
+		UserName: m.UserName,
 	}, nil
 }
 
