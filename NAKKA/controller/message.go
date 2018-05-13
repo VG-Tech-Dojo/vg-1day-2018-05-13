@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"fmt"
 )
 
 // Message is controller for requests to messages

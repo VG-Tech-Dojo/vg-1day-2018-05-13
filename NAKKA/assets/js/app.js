@@ -15,22 +15,24 @@
       }
     },
     // Tutorial 1-1. ユーザー名を表示しよう
-    template: `
-    <div class="message">
-      <div v-if="editing">
-        <div class="row">
-          <textarea v-model="editedBody" class="u-full-width"></textarea>
-          <button v-on:click="doneEdit">Save</button>
-          <button v-on:click="cancelEdit">Cancel</button>
+      template: `
+      <div class="message">
+        <div v-if="editing">
+          <div class="row">
+            <textarea v-model="editedBody" class="u-full-width"></textarea>
+            <button v-on:click="doneEdit">Save</button>
+            <button v-on:click="cancelEdit">Cancel</button>
+          </div>
+        </div>
+        <div class="message-body" v-else>
+          <img src="https://pbs.twimg.com/media/C6W0xHsU4AAVud7.jpg" v-if="username == 'Yoichi Ochiai'" width="120" height="100">
+          <span>{{ body }} - {{ username }}</span>
+          <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
+          <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
         </div>
       </div>
-      <div class="message-body" v-else>
-        <span>{{ body }} - {{ username }}</span>
-        <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
-        <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
-      </div>
-    </div>
-  `,
+    `
+  ,
     methods: {
       remove() {
         this.removeMessage(this.id)
