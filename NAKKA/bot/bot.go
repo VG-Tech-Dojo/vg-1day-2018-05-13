@@ -133,3 +133,19 @@ func NewTalkBot(out chan *model.Message) *Bot {
 		processor: processor,
 	}
 }
+
+func NewYoichiBot(out chan *model.Message) *Bot {
+	in := make(chan *model.Message)
+
+	checker := NewRegexpChecker("\\Ayoichi .*")
+
+	processor := &YoichiProcessor{}
+
+	return &Bot{
+		name:      "yoichibot",
+		in:        in,
+		out:       out,
+		checker:   checker,
+		processor: processor,
+	}
+}

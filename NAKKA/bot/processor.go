@@ -35,6 +35,8 @@ type (
 	GachaProcessor struct{}
 
 	TalkProcessor struct{}
+
+	YoichiProcessor struct{}
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
@@ -125,5 +127,36 @@ func (p *TalkProcessor) Process(msgIn *model.Message) (*model.Message, error) {
 	return &model.Message{
 		Body:     "TalkAPI：" + res.Results[0].Reply,
 		UserName: "talkbot",
+	}, nil
+}
+
+func (p *YoichiProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	r := regexp.MustCompile("\\Ayoichi (.*)\\z")
+	matchedStrings := r.FindStringSubmatch(msgIn.Body)
+	text := matchedStrings[1]
+
+	url := fmt.Sprintf(keywordAPIURLFormat, env.KeywordAPIAppID, url.QueryEscape(text))
+
+	type keywordAPIResponse map[string]interface{}
+	var json keywordAPIResponse
+	get(url, &json)
+
+	keywords := []string{}
+	for k, v := range json {
+		if k == "Error" {
+			return nil, fmt.Errorf("%#v", v)
+		}
+		keywords = append(keywords, k)
+	}
+
+
+	for s := range keywords{
+		// 以下を決して呼び出し
+		fmt.Println(s)
+	}
+
+	return &model.Message{
+		Body: strings.Join(keywords, ", "),
+		UserName: "Yoichi Ochiai",
 	}, nil
 }
