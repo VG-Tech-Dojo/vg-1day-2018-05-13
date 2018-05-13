@@ -83,6 +83,10 @@ func (s *Server) Init(dbconf, env string) error {
 	s.bots = append(s.bots, omikujiBot)
 	keywordBot := bot.NewKeywordBot(s.poster.In)
 	s.bots = append(s.bots, keywordBot)
+	gachaBot := bot.NewGachaBot(s.poster.In)
+	s.bots = append(s.bots, gachaBot)
+	talkdBot := bot.NewTalkBot(s.poster.In)
+	s.bots = append(s.bots, talkdBot)
 
 	return nil
 }
