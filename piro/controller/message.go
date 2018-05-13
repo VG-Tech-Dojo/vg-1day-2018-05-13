@@ -98,18 +98,6 @@ func (m *Message) Create(c *gin.Context) {
 func (m *Message) UpdateByID(c *gin.Context) {
 	var msg model.Message
 
-	if c.Request.ContentLength == 0 {
-		resp := httputil.NewErrorResponse(errors.New("body is missing"))
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-
-	if err := c.BindJSON(&msg); err != nil {
-		resp := httputil.NewErrorResponse(err)
-		c.JSON(http.StatusInternalServerError, resp)
-		return
-	}
-
 	updated, err := msg.Update(m.DB)
 	if err != nil {
 		resp := httputil.NewErrorResponse(err)
