@@ -73,5 +73,31 @@ func (m *Message) Insert(db *sql.DB) (*Message, error) {
 // Mission 1-1. メッセージを編集しよう
 // ...
 
+func (m *Message) Update(db *sql.DB) (*Message, error) {
+	_, err := db.Exec(`update message set body=?, username=? where id = ?`, m.Body, m.UserName, m.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Message{
+		ID:       m.ID,
+		Body:     m.Body,
+		UserName: m.UserName,
+	}, nil
+}
+
 // Mission 1-2. メッセージを削除しよう
 // ...
+
+func (m *Message) Delete(db *sql.DB) (*Message, error) {
+	_, err := db.Exec(`delete from message where id = ?`, m.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Message{
+		ID:       m.ID,
+		Body:     m.Body,
+		UserName: m.UserName,
+	}, nil
+}
