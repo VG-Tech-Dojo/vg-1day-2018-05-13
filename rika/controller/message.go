@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/rika/httputil"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/rika/model"
 	"github.com/gin-gonic/gin"
@@ -74,6 +75,9 @@ func (m *Message) Create(c *gin.Context) {
 
 	// Tutorial 1-2. ユーザー名を追加しよう
 	// できる人は、ユーザー名が空だったら`anonymous`等適当なユーザー名で投稿するようにしてみよう
+	if msg.UserName == "" {
+		msg.UserName = "名無しさん"
+	}
 
 	inserted, err := msg.Insert(m.DB)
 	if err != nil {
