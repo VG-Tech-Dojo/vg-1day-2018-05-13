@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="jp">
+<html lang="jp" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <title>vg-1day-2018-05-13</title>
@@ -24,7 +24,8 @@
       </div>
     </div>
     <div class="row">
-      <textarea class="u-full-width" v-model="newMessage.body" placeholder="メッセージ"></textarea>
+        <input type="text" class="u-full-width" v-model="newMessage.parentid" placeholder="返信先ID">
+        <textarea class="u-full-width" v-model="newMessage.body" placeholder="メッセージ"></textarea>
       <!-- Tutorial 1-2. ユーザー名を追加しよう -->
       <input type="text" class="u-full-width" v-model="newMessage.username" placeholder="ユーザー名">
 

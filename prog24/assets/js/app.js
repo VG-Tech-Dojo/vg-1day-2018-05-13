@@ -3,11 +3,12 @@
   const Message = function() {
     this.body = ''
     this.username = ''
+    this.parentid = ''
   };
 
   Vue.component('message', {
     // Tutorial 1-1. ユーザー名を表示しよう
-    props: ['id', 'body', 'username', 'removeMessage', 'updateMessage'],
+    props: ['id', 'body', 'username', 'parentid', 'removeMessage', 'updateMessage'],
     data() {
       return {
         editing: false,
@@ -25,7 +26,7 @@
         </div>
       </div>
       <div class="message-body" v-else>
-        <span>{{ body }} - {{ username }}</span>
+        <span>{{ id }} {{ body }} + {{ username }}</span>
         <span class="action-button u-pull-right" v-on:click="edit">&#9998;</span>
         <span class="action-button u-pull-right" v-on:click="remove">&#10007;</span>
       </div>
@@ -69,9 +70,19 @@
       },
       sendMessage() {
         const message = this.newMessage;
+        var json = JSON.stringify(message);
+
+        console.log(json)
+
+        if(json.parentid == null){
+            json.parentid = -1;
+        }
+
+          console.log(json)
+
         fetch('/api/messages', {
           method: 'POST',
-          body: JSON.stringify(message)
+          body: json
         })
           .then(response => response.json())
           .then(response => {
@@ -87,19 +98,22 @@
           });
       },
       removeMessage(id) {
-        return fetch(`/api/messages/${id}`, {
-          method: 'DELETE'
-        })
-        .then(response => response.json())
-        .then(response => {
-          if (response.error) {
-            alert(response.error.message);
-            return;
-          }
-          this.messages = this.messages.filter(m => {
-            return m.id !== id
-          })
-        })
+        // return fetch(`/api/messages/${id}`, {
+        //   method: 'DELETE'
+        // })
+        // .then(response => response.json())
+        // .then(response => {
+        //   if (response.error) {
+        //     alert(response.error.message);
+        //     return;
+        //   }
+        //   this.messages = this.messages.filter(m => {
+        //     return m.id !== id
+        //   })
+        // })
+          fetch('/api/children/${id}').then(response => response.json()).then(data => {
+              this.messages = data.result;
+          });
       },
       updateMessage(updatedMessage) {
         return fetch(`/api/messages/${updatedMessage.id}`, {

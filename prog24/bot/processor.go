@@ -112,7 +112,7 @@ func (p *TalkProcessor) Process(msgIn *model.Message) (*model.Message, error) {
 		} `json:"results"`
 	}{}
 	params := url.Values{}
-	params.Set("apikey", env.TalkAPIAppID)
+	//params.Set("apikey", env.TalkAPIAppID)
 	params.Add("query", text)
 
 	post(talkAPIURLFormat, params, res)
