@@ -3,15 +3,14 @@ package bot
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/NAKKA/env"
-	"github.com/mrjones/oauth"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/NAKKA/env"
+	"github.com/mrjones/oauth"
 )
 
 type Twitter struct {
@@ -92,7 +91,7 @@ func randIntn(n int) int {
 	return rand.Intn(n)
 }
 
-// ------------------------------------------------------
+// TwitterAPI------------------------------------------------------
 
 func NewTwitter(consumerKey, consumerSecret, accessToken, accessTokenSecret string) *Twitter {
 	twitter := new(Twitter)
@@ -129,19 +128,23 @@ func (t *Twitter) get(url string, params map[string]string) (interface{}, error)
 func twitterGet(key string) (msg string, err error) {
 	twitter := NewTwitter(env.TwitterConsumerKey, env.TwitterConsumerSecret, env.TwitterAccessToken, env.TwitterTokenSecret)
 
-	// ホームタイムラインを取得
-	params := map[string]string{"q": key + "from:ochyai", "modules": "status", "count": "1", "result_type": "recent"}
+	// TwitterAPI検索結果を取得(落合陽一のツイート、リツイートなし、1件、最新のツイート)
+	params := map[string]string{"q": "from:ochyai -rt", "count": "1", "result_type": "recent"}
 	res, err := twitter.get(
 		"https://api.twitter.com/1.1/search/tweets.json", // Resource URL
 		params) // Parameters
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
-	fmt.Printf("twi: %v\n", res)
 
-	for _, val := range res.(map[string]interface{}) {
-		tweet, _ := val.(map[string]interface{})
-		fmt.Println(tweet["text"])
+	msg = "[No tweet!!]"
+	if statuses := res.(map[string]interface{})["statuses"]; statuses != nil {
+		if status := statuses.([]interface{})[0]; status != nil {
+			if text := status.(map[string]interface{})["text"]; text != nil {
+				msg = text.(string)
+			}
+		}
 	}
-	return "", nil
+
+	return msg, nil
 }

@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"fmt"
-	"log"
+
+	"net/url"
 
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/NAKKA/env"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/NAKKA/model"
-	"net/url"
 )
 
 const (
@@ -142,7 +142,6 @@ func (p *YoichiProcessor) Process(msgIn *model.Message) (*model.Message, error) 
 	type keywordAPIResponse map[string]interface{}
 	var json keywordAPIResponse
 	get(url, &json)
-	log.Printf("get: %v\n", json)
 
 	keywords := []string{}
 	for k, v := range json {
