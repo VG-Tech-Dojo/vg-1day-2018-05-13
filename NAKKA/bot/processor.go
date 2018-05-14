@@ -6,9 +6,10 @@ import (
 
 	"fmt"
 
+	"net/url"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/NAKKA/env"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/NAKKA/model"
-	"net/url"
 )
 
 const (
@@ -35,6 +36,8 @@ type (
 	GachaProcessor struct{}
 
 	TalkProcessor struct{}
+
+	YoichiProcessor struct{}
 )
 
 // Process は"hello, world!"というbodyがセットされたメッセージのポインタを返します
@@ -125,5 +128,44 @@ func (p *TalkProcessor) Process(msgIn *model.Message) (*model.Message, error) {
 	return &model.Message{
 		Body:     "TalkAPI：" + res.Results[0].Reply,
 		UserName: "talkbot",
+	}, nil
+}
+
+func (p *YoichiProcessor) Process(msgIn *model.Message) (*model.Message, error) {
+	r := regexp.MustCompile("\\Ayoichi (.*)\\z")
+	matchedStrings := r.FindStringSubmatch(msgIn.Body)
+	fmt.Printf("Process: %v\n", matchedStrings)
+	text := matchedStrings[1]
+
+	url := fmt.Sprintf(keywordAPIURLFormat, env.KeywordAPIAppID, url.QueryEscape(text))
+
+	type keywordAPIResponse map[string]interface{}
+	var json keywordAPIResponse
+	get(url, &json)
+
+	keywords := []string{}
+	for k, v := range json {
+		if k == "Error" {
+			return nil, fmt.Errorf("%#v", v)
+		}
+		keywords = append(keywords, k)
+	}
+
+	if len(keywords) == 0 {
+		return &model.Message{
+			Body:     "[No keyword!!]",
+			UserName: "Yoichi Ochiai",
+		}, nil
+	}
+
+	res, err := twitterGet(keywords[0])
+	if err != nil {
+		return nil, fmt.Errorf("%#v", err)
+	}
+	myBody := []string{res}
+
+	return &model.Message{
+		Body:     strings.Join(myBody, ", "),
+		UserName: "Yoichi Ochiai",
 	}, nil
 }
