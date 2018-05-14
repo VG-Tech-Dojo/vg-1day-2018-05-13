@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"log"
+
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/mochiya98/httputil"
 	"github.com/VG-Tech-Dojo/vg-1day-2018-05-13/mochiya98/model"
 	"github.com/gin-gonic/gin"
@@ -18,7 +20,16 @@ type Message struct {
 
 // All は全てのメッセージを取得してJSONで返します
 func (m *Message) All(c *gin.Context) {
+
+	rows, err := m.DB.Query(`select id, body, type, username from message`)
+	log.Println(rows)
+	log.Println(err)
+
+
 	msgs, err := model.MessagesAll(m.DB)
+	log.Println(msgs)
+	log.Println(model.Message{})
+
 	if err != nil {
 		resp := httputil.NewErrorResponse(err)
 		c.JSON(http.StatusInternalServerError, resp)
